@@ -6,8 +6,8 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 
 ## 1) Fachliche Anforderungen ermitteln
 - gemeinsam mit Fachexperten funktionale und nicht-funktionale Anforderungen (Qualitätsmerkmale) sammeln
-- Geschäftsprozesse/Use-Cases grafisch modellieren 
-- zb via Event Storming oder Domain Storytelling
+- Geschäftsprozesse/Use-Cases grafisch modellieren, zb via Post-it oder Miro 
+- Über Meeting-Formate wie Event Storming oder Domain Storytelling
 
 ## 2) Kontext-Übersicht erstellen
 - Sub-Domänen bzw. Bounded Context ermitteln und Context-Map erstellen
@@ -16,9 +16,9 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - bzw wo gibt es Sprachgrenzen, also unterschiedliche Bedeutungen für denselben Begriff
 - Schnitte einführen, um Kontext-Grenzen deutlich zu machen
 - Kontexte kategorisieren
-  - Core: Kern der Anwendung, zentrale Business-Prozesse
-  - Supporting: Unterstützt den Core (Zusatz-Features)
-  - Generic: kein Anwendungsbezug, aber ein notwendiges Übel (zb. Nutzerverwaltung)
+  - Core: Kern der Anwendung, zentrale Business-Prozesse (früher umsetzen, evtl. höher skalieren)
+  - Supporting: Unterstützt den Core durch Zusatz-Features (wird erst später umgesetzt)
+  - Generic: kein Anwendungsbezug, aber ein notwendiges Übel (kann man dazu kaufen, zb. Nutzerverwaltung)
 - siehe auch Strategic Design von DDD
 
 ## 3) Geschäftsprozesse über Kontext-Grenzen modellieren
@@ -48,8 +48,8 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 ## 5) Service unterteilen
 - ein Service wird zur besseren Übersicht in Schichten aufgeteilt
 - jede Schicht sollte lose gekoppelt sein zur anderen (Interfaces, Spring Modulith)
-  - a) 3-Layer (API, Business, DB)
-  - b) Ports/Adapter, Hexagonal, Onion
+  - a) 3-Layer (API, Business, DB): von oben nach unten gerichtet
+  - b) Ports/Adapter, Hexagonal, Onion: von außen nach innen gerichtet
 - die Geschäftslogik sollte möglichst frei von Technologien sein (wenig Spring)
 - Aufteilung von Logik und Daten
   - a) Transaction Script: 
@@ -60,7 +60,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - Logik und Daten/State gemeinsam in einer Klasse (Rich Domain Model)
     - Services sind sehr klein und delegieren nur weiter an die Domain Objekte
 
-## 6) Service-Adapter nach außen entscheiden
+## 6) Kopplungen vom Service nach außen
 
 ### 6.1) API
 - API Design 
@@ -72,24 +72,43 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - b) gRPC: falls sehr performante Aufrufe nötig sind
   - c) GraphQL: zwischen Frontend und Backend (selektieren von Properties)
   - d) Events: RabbitMQ, Kafka, etc.
+  - e) Reactive Stream (Spring Webflux)
 - API Security 
   - zb OAuth2 Flow mit JWT (Spring Security Resource Server)
   - evtl. ein Gateway als zusätzlicher Schutz
 
 ### 6.2) Datenbank
 - jeder Service hat seine eigene logische Datenbank (evtl. physisch kombiniert)
+- Datenhaltung service-übergreifend
+  - a) Pull-Modell: 
+    - Daten eines anderen Kontextes werden bei Bedarf vom Owner-Service abgefragt
+    - ist einfacher und braucht weniger Speicherplatz
+    - dauert aber länger und ist fehleranfällig
+  - b) Push-Modell: 
+    - Daten eines anderen Kontextes werden im eigenen Service zusätzlich gespeichert/dupliziert 
+    - und per Event (Message-Queue) vom Owner-Service aktualisiert
+    - ist komplizierter und braucht mehr Speicher 
+    - dafür viel schneller und man ist unabhängiger während der Verarbeitung
 - Datenbank Technologie  
-  - SQL: strukturierte Daten, komplexe Abfragen
+  - a) SQL: strukturierte Daten, komplexe Abfragen
     - Postgres, MySql, etc
     - Spring Data JPA (komplex) oder Data JDBC (einfach)
-  - NoSQL: unstrukturierte Daten, einfache Abfragen, gute Skalierung
+  - b) NoSQL: unstrukturierte Daten, einfache Abfragen, gute Skalierung
     - MongoDb, etc
     - Spring Data MongoDB
+- Datenbank Tabellen Design
+  - siehe auch DDD Tactical Design (Entity, Value Object, Aggregate)
+  - große verschachtelte Graphen vermeiden, Konsistenzgrenzen einführen
+  - wenn nötig mit IDs arbeiten statt direkt zu referenzieren
 - Datenbank Interaktion
   - den aktuellen Zustand speichern oder Event Sourcing
   - lokale Transaktionen (@Transactional) für zusammenhängende Geschäftsprozesse
   - Saga Pattern: service-übergreifende Prozesse (ggf. Kompensationsoperation)
   - Transaction Outbox Pattern: garantierte Event-Zustellung über extra DB-Tabelle
+
+### 6.3) Weitere mögliche Kopplungen
+- Gemeinsame Bibliothek (Lib), die von mehreren Services/Teams genutzt wird
+- in DDD: Shared Kernel
 
 ## Dokumentation der Architektur
 - Arc42: https://arc42.de/overview/
