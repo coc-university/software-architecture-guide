@@ -149,4 +149,5 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 - Canvas: https://canvas.arc42.org
 - https://github.com/feststelltaste/software-component-canvas
 
-![project-architecture-guide.drawio.pdf](project-architecture-guide.drawio.pdf)
+## Ablauf
+![project-architecture-guide.drawio.pdf](project-architecture-guide.drawio.png)
