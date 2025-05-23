@@ -7,16 +7,27 @@ Im fachlichen Abschnitt werden Konzepte von Domain Driven Design (DDD) verwendet
 Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.  
 
 ## 1) Fachliche Anforderungen ermitteln
-- gemeinsam mit Fachexperten Anforderungen sammeln
+- Alle relevanten Personen zusammen bringen
+  - Meeting-Formate wie Event Storming oder Domain Storytelling 
+  - analog mit Post-it's oder digital (zB Miro)
+- gemeinsam mit Fachexperten die Domäne verstehen
+- eine gemeinsame Sprache (Ubiquitous Language) finden
+- Anforderungen sammeln
   - funktional: Fokus auf das "was" (Mehrwert für Kunde)
-  - nicht-funktional: Fokus auf das "wie" (Qualitätsmerkmale erfüllen)
-- Geschäftsprozesse bzw Use-Cases grafisch modellieren, zb via Post-it oder Miro
+  - nicht-funktional: Fokus auf das "wie" (Qualitätsmerkmale), zb:
+    - Performance (Antwortzeit, Durchsatz, Skalierbarkeit)
+    - Zuverlässigkeit (Fehlertoleranz, Verfügbarkeit)
+    - Sicherheit (Authentifizierung, Autorisierung)
+    - Wartbarkeit (Modularität, Testbarkeit, Dokumentation)
+    - Benutzbarkeit (Barrierefreiheit, Fehlermeldungen)
+- Geschäftsprozesse bzw Use-Cases grafisch modellieren
   - Akteure/Objekte bilden Knoten im Diagramm
-  - Aktivitäten sind Verknüpfungen über beschriftete Pfeile
-- Zum Beispiel Meeting-Formate wie Event Storming oder Domain Storytelling
+  - Aktivitäten sind Verknüpfungen/Kanten über beschriftete Pfeile
 
 ## 2) Kontext-Übersicht erstellen
-- Sub-Domänen bzw. Bounded Context ermitteln und Context-Map (Landkarte) erstellen
+- Die Domänen in Sub-Domänen unterteilen
+- Jede Sub-Domäne kann ein oder mehrere Bounded Contexts haben
+- Bounded Context ermitteln und Context-Map (Landkarte) erstellen
   - die Frage klären, welche Bereiche gehören fachlich eng zusammen und welche nicht
   - also wo besteht eine hohe Kohäsion (zusammengehörige Einheiten) 
   - mit gleichzeitig geringe Kopplung zu anderen Bereichen
@@ -42,21 +53,27 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 - Einfluss-Faktoren für die Entscheidung:
   - fachliche Komplexität
   - Größe des Entwickler-Teams
+  - Entwicklungsgeschwindigkeit (wie oft gibt es Releases/Deployments)
   - Betrieb (Skalierung, Sicherheit, Resilienz, Wartung, Kosten)
   - Datenhaltung
   - Technologie-Vielfalt 
 
-## 4) Kontext-Grenzen modellieren
+## 4) Kontexte verknüpfen
 
-### 4.1) Wie werden Kontexte verknüpft
+### 4.1) Beziehungen analysieren
 - alle Verknüpfungspunkte zwischen den Kontexten identifizieren
-- Abhängigkeiten bzw Richtungen betrachten (Upstream, Downstream)
+- Abhängigkeiten bzw Richtungen betrachten 
+  - Upstream, Downstream: liefernde und verbrauchende Kontexte
+  - Conformist: Downstream muss sich anpassen, ohne Einfluss auf Upstream
+  - Customer, Supplier: aktive Zusammenarbeit der Kontexte
+  - Open Host Service: Kontext bietet Schnittstelle für beliebige Nutzer
+  - Shared Kernel: gemeinsame Bibliothek (Lib)
 - betrifft sowohl Services als auch Module in einem Service
 - Möglichkeiten für die Koordination
   - a) Orchestration (zentraler Punkt, zb Workflow-Engines)
   - b) Choreografie (verteilte Steuerung)
 
-### 4.2) API
+### 4.2) APIs entwerfen
 - API Design 
   - a) CRUD: eher technisch formuliert, orientiert an DB (für simplen Service)
   - b) CQRS: Command & Queries, fachlich sprechende Aktionen
@@ -79,13 +96,9 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - zb OAuth2 Flow mit JWT (Spring Security Resource Server)
   - evtl. ein Gateway als zusätzlicher Schutz
 
-### 4.3) Weitere mögliche Kopplungen
-- Gemeinsame Bibliothek (Lib), die von mehreren Services/Teams genutzt wird
-- in DDD: Shared Kernel
-
 ## 5) Datenfluss und Speicherart planen
 
-### 5.1) Verteilte Datenhaltung 
+### 5.1) Verteilte Datenhaltung koordinieren
 - jeder Service hat seine eigene logische Datenbank
   - evtl. physisch kombiniert, aber kein Zugriff vom anderen Service
   - also keine Kopplung über die Datenbank, damit Zuständigkeit klar ist
