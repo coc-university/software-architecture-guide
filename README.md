@@ -168,6 +168,30 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 - dabei sollten die Qualitätsmerkmale den Rahmen vorgeben
 - Gravierende Änderungen/Entscheidungen als ADR festhalten
 
+## Technische Schulden 
+- diese lassen sich nie komplett vermeiden
+- Umgang
+  - kategorisieren nach Typ und Risiko
+  - sichtbar machen über Dokumentation 
+  - kommunizieren bei der Projektplanung
+  - Auswirkungen/Kosten aufzeigen
+- nachfolgend ein paar Beispiele:
+- Architektur
+  - enge Kopplung zwischen Komponenten
+  - Vermischung von Schichten
+  - keine klare Verantwortungszuordnung
+  - schlechte Fehlerbehandlung/Logging/Monitoring
+- Framework & Infrastruktur
+  - veraltete Bibliotheken, Frameworks, Server
+  - unsichere Konfigurationen
+  - keine Automatisierung (CI/CD-Pipeline)
+  - schlechte Versionierung 
+- Code
+  - duplizierte Abschnitte
+  - nicht sprechende Namen
+  - geringe Testabdeckung, bzw zu viel manuell
+  - Verletzung von Clean Code-Prinzipien (SOLID, DRY, KISS)
+
 ## Dokumentation der Architektur
 - die Doku sollte eher schlank gehalten sein 
 - so können Änderungen einfach erkannt und integriert werden
