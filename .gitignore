@@ -168,5 +168,8 @@ buildNumber.properties
 #MAC
 **/.DS_Store
 
+# Draw.io
+*.bkp
+
 
 # End of https://www.gitignore.io/api/git,maven,eclipse,intellij

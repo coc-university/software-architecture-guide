@@ -46,48 +46,29 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - Datenhaltung
   - Technologie-Vielfalt 
 
-## 4) Geschäftsprozesse über Service-Grenzen modellieren
-- Klärung wie fachliche Prozesse in der Technik abgebildet werden sollen
-  - Orchestrieren vs Choreografieren
-  - BPMN/Workflow-Engines
-- wie arbeiten die Kontexte zusammen
-  - Abhängigkeiten zwischen den Kontexten (Upstream, Downstream)
-  - Kommunikation von einem zum anderen Kontext
-    - direkter Aufruf über API
-    - asynchron, event-getrieben
+## 4) Kontext-Grenzen modellieren
 
-## 5) Service intern unterteilen
-- ein Service wird zur besseren Übersicht in Schichten/Ringe aufgeteilt
-- jede Ebene sollte lose gekoppelt sein zur anderen (Interfaces, Spring Modulith)
-  - a) 3-Layer (API, Business, DB): von oben nach unten gerichtet
-  - b) Ports/Adapter, Hexagonal, Onion: von außen nach innen gerichtet
-- die Geschäftslogik sollte möglichst frei von Technologien sein (wenig Spring)
-- Aufteilung von Logik und Daten
-  - a) Transaction Script: 
-    - Trennung von Logik und Daten/State (nicht klassisch objektorientiert)
-    - DB Entitäten haben nur Daten/State (Anemic Domain Model)
-    - alle Geschäftslogik liegt in Service-Klassen
-    - geeignet für einfache Prozesse
-    - kann irgendwann komplex werden (Service A -> Service B -> Service C)
-  - b) Domain Model / Object Oriented Design
-    - Logik und Daten/State gemeinsam in einer Klasse (Rich Domain Model)
-    - keine Setter nutzen, sondern stattdessen fachliche Methoden
-    - Services sind sehr klein und delegieren nur weiter an die Domain Objekte
-    - besser erweiterbar/verständlich in einer komplexen Umgebung
+### 4.1) Wie werden Kontexte verknüpft
+- alle Verknüpfungspunkte zwischen den Kontexten identifizieren
+- Abhängigkeiten bzw Richtungen betrachten (Upstream, Downstream)
+- betrifft sowohl Services als auch Module in einem Service
+- Möglichkeiten für die Koordination
+  - a) Orchestration (zentraler Punkt, zb Workflow-Engines)
+  - b) Choreografie (verteilte Steuerung)
 
-## 6) Kopplungen vom Service nach außen
-
-### 6.1) API
+### 4.2) API
 - API Design 
   - a) CRUD: eher technisch formuliert, orientiert an DB (für simplen Service)
   - b) CQRS: Command & Queries, fachlich sprechende Aktionen
   - c) Events: Benachrichtigung trifft ein oder wird versendet
 - API Technologie
-  - a) REST: für einfache Service-to-Service Kommunikation
-  - b) gRPC: falls sehr performante Aufrufe nötig sind
-  - c) GraphQL: zwischen Frontend und Backend (selektieren von Properties)
-  - d) Events: RabbitMQ, Kafka, etc.
-  - e) Reactive Stream (Spring Webflux)
+  - synchron
+    - a) REST: für einfache Service-to-Service Kommunikation
+    - b) Reactive Stream (Spring Webflux)
+    - b) gRPC: falls sehr performante Aufrufe nötig sind
+    - c) GraphQL: zwischen Frontend und Backend (selektieren von Properties)
+  - asynchron
+    - Events: RabbitMQ, Kafka, etc.
 - API Daten Modelle
   - das Daten-Schema eines anderen Services soll evtl. nicht übernommen werden
   - bedeutet es muss ein Mapping an der API erfolgen
@@ -98,22 +79,36 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - zb OAuth2 Flow mit JWT (Spring Security Resource Server)
   - evtl. ein Gateway als zusätzlicher Schutz
 
-### 6.2) Datenbank
-- jeder Service hat seine eigene logische Datenbank 
+### 4.3) Weitere mögliche Kopplungen
+- Gemeinsame Bibliothek (Lib), die von mehreren Services/Teams genutzt wird
+- in DDD: Shared Kernel
+
+## 5) Datenfluss und Speicherart planen
+
+### 5.1) Verteilte Datenhaltung 
+- jeder Service hat seine eigene logische Datenbank
   - evtl. physisch kombiniert, aber kein Zugriff vom anderen Service
   - also keine Kopplung über die Datenbank, damit Zuständigkeit klar ist
-- Datenhaltung service-übergreifend
-  - a) Pull-Modell: 
+- Datenaustausch
+  - a) Pull-Modell:
     - Daten eines anderen Kontextes werden bei Bedarf vom Owner-Service abgefragt
     - ist einfacher und braucht weniger Speicherplatz
     - dauert aber länger und ist fehleranfällig
-  - b) Push-Modell: 
-    - Daten eines anderen Kontextes werden im eigenen Service zusätzlich gespeichert/dupliziert 
+  - b) Push-Modell:
+    - Daten eines anderen Kontextes werden im eigenen Service zusätzlich gespeichert/dupliziert
     - hier reicht unter Umständen eine Teilmenge, also nur so viel wie nötig
     - Aktualisierung der Daten per Event vom Owner-Service notwendig
-    - ist komplizierter und braucht mehr Speicher 
+    - ist komplizierter und braucht mehr Speicher
     - dafür viel schneller und man ist unabhängiger während der Verarbeitung
     - ist bei DDD üblich, denn Entitäten können in mehreren Bounded Contexts vorhanden sein
+
+### 5.2) Interaktion mit der Datenbank
+- den aktuellen Zustand speichern oder Event Sourcing
+- lokale Transaktionen (@Transactional) für zusammenhängende Geschäftsprozesse
+- Saga Pattern: service-übergreifende Prozesse (ggf. Kompensationsoperation)
+- Transaction Outbox Pattern: garantierte Event-Zustellung über extra DB-Tabelle
+
+### 5.2) Datenbank designen
 - Datenbank Technologie  
   - a) SQL: strukturierte Daten, komplexe Abfragen
     - Postgres, MySql, etc
@@ -125,15 +120,25 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - siehe auch DDD Tactical Design (Entity, Value Object, Aggregate)
   - große verschachtelte Graphen vermeiden, Konsistenzgrenzen einführen
   - wenn nötig mit IDs arbeiten statt direkt zu referenzieren
-- Datenbank Interaktion
-  - den aktuellen Zustand speichern oder Event Sourcing
-  - lokale Transaktionen (@Transactional) für zusammenhängende Geschäftsprozesse
-  - Saga Pattern: service-übergreifende Prozesse (ggf. Kompensationsoperation)
-  - Transaction Outbox Pattern: garantierte Event-Zustellung über extra DB-Tabelle
 
-### 6.3) Weitere mögliche Kopplungen
-- Gemeinsame Bibliothek (Lib), die von mehreren Services/Teams genutzt wird
-- in DDD: Shared Kernel
+## 6) Services intern unterteilen
+- ein Service (bzw jedes Modul davon) wird in Schichten/Ringe aufgeteilt
+- jede Ebene sollte lose gekoppelt sein zur anderen (Interfaces, Spring Modulith)
+  - a) 3-Layer (API, Business, DB): von oben nach unten gerichtet
+  - b) Ports/Adapter, Hexagonal, Onion: von außen nach innen gerichtet
+- die Geschäftslogik sollte möglichst frei von Technologien sein (wenig Spring)
+- Aufteilung von Logik und Daten
+  - a) Transaction Script:
+    - Trennung von Logik und Daten/State (nicht klassisch objektorientiert)
+    - DB Entitäten haben nur Daten/State (Anemic Domain Model)
+    - alle Geschäftslogik liegt in Service-Klassen
+    - geeignet für einfache Prozesse
+    - kann irgendwann komplex werden (Service A -> Service B -> Service C)
+  - b) Domain Model / Object Oriented Design
+    - Logik und Daten/State gemeinsam in einer Klasse (Rich Domain Model)
+    - keine Setter nutzen, sondern stattdessen fachliche Methoden
+    - Services sind sehr klein und delegieren nur weiter an die Domain Objekte
+    - besser erweiterbar/verständlich in einer komplexen Umgebung
 
 ## Architektur entwickelt sich weiter
 - die Architektur muss stetig verfeinert und angepasst werden
