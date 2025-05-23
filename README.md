@@ -154,9 +154,10 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - besser erweiterbar/verständlich in einer komplexen Umgebung
 
 ## Architektur entwickelt sich weiter
-- die Architektur muss stetig verfeinert und angepasst werden
 - ein perfekter Entwurf zum Projektstart ist unrealistisch
-- Gravierende Änderungen/Entscheidungen sollten als ADR festgehalten werden
+- die Architektur muss stetig verfeinert und angepasst werden
+- dabei sollten die Qualitätsmerkmale den Rahmen vorgeben
+- Gravierende Änderungen/Entscheidungen als ADR festhalten
 
 ## Dokumentation der Architektur
 - die Doku sollte eher schlank gehalten sein 
