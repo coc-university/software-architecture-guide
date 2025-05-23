@@ -25,7 +25,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - Aktivitäten sind Verknüpfungen/Kanten über beschriftete Pfeile
 
 ## 2) Kontext-Übersicht erstellen
-- Die Domänen in Sub-Domänen unterteilen
+- Die Domäne in Sub-Domänen unterteilen
 - Jede Sub-Domäne kann ein oder mehrere Bounded Contexts haben
 - Bounded Context ermitteln und Context-Map (Landkarte) erstellen
   - die Frage klären, welche Bereiche gehören fachlich eng zusammen und welche nicht
@@ -35,7 +35,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - wo gibt es Sprachgrenzen, also unterschiedliche Bedeutungen für denselben Begriff
   - wie sieht die Verantwortlichkeit der Daten im Gesamtprozess aus
 - Schnitte einführen, um Kontext-Grenzen deutlich zu machen
-- Kontexte kategorisieren
+- Kontexte bzw Sub-Domänen kategorisieren
   - Core: Kern der Anwendung, zentrale Business-Prozesse (früher umsetzen, evtl. höher skalieren)
   - Supporting: Unterstützt den Core durch Zusatz-Features (wird erst später umgesetzt)
   - Generic: kein Anwendungsbezug, aber ein notwendiges Übel (kann man dazu kaufen, zb. Nutzerverwaltung)
@@ -66,10 +66,12 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - Upstream, Downstream: liefernde und verbrauchende Kontexte
   - Conformist: Downstream muss sich anpassen, ohne Einfluss auf Upstream
   - Customer, Supplier: aktive Zusammenarbeit der Kontexte
+  - Partnership: beide Seiten sind gleichberechtigt
   - Open Host Service: Kontext bietet Schnittstelle für beliebige Nutzer
   - Shared Kernel: gemeinsame Bibliothek (Lib)
+  - Separate Ways: Kontexte haben nichts miteinander zu tun und bleiben unabhängig
 - betrifft sowohl Services als auch Module in einem Service
-- Möglichkeiten für die Koordination
+- Möglichkeiten für die Koordination der Beziehungen
   - a) Orchestration (zentraler Punkt, zb Workflow-Engines)
   - b) Choreografie (verteilte Steuerung)
 
@@ -91,7 +93,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - bedeutet es muss ein Mapping an der API erfolgen
   - so ist der Service unabhängiger gegenüber Änderungen
   - bzw Änderungen betreffen nicht direkt den Kern der Anwendung
-  - in DDD: Anti Corruption Layer
+  - in DDD: Anti Corruption Layer (ACL)
 - API Security 
   - zb OAuth2 Flow mit JWT (Spring Security Resource Server)
   - evtl. ein Gateway als zusätzlicher Schutz
@@ -137,16 +139,23 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 ## 6) Services intern unterteilen
 - ein Service (bzw jedes Modul davon) wird in Schichten/Ringe aufgeteilt
 - jede Ebene sollte lose gekoppelt sein zur anderen (Interfaces, Spring Modulith)
-  - a) 3-Layer (API, Business, DB): von oben nach unten gerichtet
+  - a) 3-Layer (API, Business, DB): von oben nach unten gerichtete Abhängigkeit
   - b) Ports/Adapter, Hexagonal, Onion: von außen nach innen gerichtet
 - die Geschäftslogik sollte möglichst frei von Technologien sein (wenig Spring)
+  - bei eingehenden Aufrufen (Inbound/Driving-Adapter) ist ein Interface optional
+  - ausgehende Aufrufe (Outbound/Driven-Adapter) sollten entkoppelt sein (Port)
+  - so gibt es keinen direkten Bezug zur konkreten Technologie
+- das Framework hilft bei der Umgebung
+  - API (in): zb @Controller, @XxxMapping, @XxxListener
+  - API (out): zb XxxTemplate, XxxClient
+  - DB: zb @Repository, @Entity, @Table, @Document
 - Aufteilung von Logik und Daten
   - a) Transaction Script:
     - Trennung von Logik und Daten/State (nicht klassisch objektorientiert)
     - DB Entitäten haben nur Daten/State (Anemic Domain Model)
     - alle Geschäftslogik liegt in Service-Klassen
     - geeignet für einfache Prozesse
-    - kann irgendwann komplex werden (Service A -> Service B -> Service C)
+    - kann irgendwann komplex werden (Service 1 -> Service 2 -> Service 3)
   - b) Domain Model / Object Oriented Design
     - Logik und Daten/State gemeinsam in einer Klasse (Rich Domain Model)
     - keine Setter nutzen, sondern stattdessen fachliche Methoden
