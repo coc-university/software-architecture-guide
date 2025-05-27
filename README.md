@@ -8,7 +8,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 
 ## 1) Fachliche Anforderungen ermitteln
 - Alle relevanten Personen zusammen bringen
-  - Meeting-Formate wie Event Storming oder Domain Storytelling 
+  - Meeting-Formate wie Event Storming oder Domain Storytelling, siehe auch [Link](https://www.youtube.com/watch?v=EaKWQ1rsaqQ) 
   - analog mit Post-it's oder digital (zB Miro)
 - gemeinsam mit Fachexperten die Domäne verstehen
 - eine gemeinsame Sprache (Ubiquitous Language) finden
@@ -26,8 +26,8 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 
 ## 2) Kontext-Übersicht erstellen
 - Die Domäne in Sub-Domänen unterteilen
-- Jede Sub-Domäne kann ein oder mehrere Bounded Contexts haben
-- Bounded Context ermitteln und Context-Map (Landkarte) erstellen
+- Jede Sub-Domäne kann ein oder mehrere Bounded Contexts haben, siehe auch [Link](https://www.youtube.com/watch?v=yQgCmMBNle4)
+- Bounded Context ermitteln und Context-Map (Landkarte) erstellen, siehe auch [Link](https://www.youtube.com/watch?v=c5H0APovhsw)
   - die Frage klären, welche Bereiche gehören fachlich eng zusammen und welche nicht
   - also wo besteht eine hohe Kohäsion (zusammengehörige Einheiten) 
   - mit gleichzeitig geringe Kopplung zu anderen Bereichen
@@ -39,7 +39,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - Core: Kern der Anwendung, zentrale Business-Prozesse (früher umsetzen, evtl. höher skalieren)
   - Supporting: Unterstützt den Core durch Zusatz-Features (wird erst später umgesetzt)
   - Generic: kein Anwendungsbezug, aber ein notwendiges Übel (kann man dazu kaufen, zb. Nutzerverwaltung)
-- siehe auch Strategic Design von DDD
+- siehe auch Strategic Design von DDD, bzw [Link](https://www.youtube.com/watch?v=NvBsEnDgA4o) oder siehe auch [Link](https://www.youtube.com/watch?v=ttIRNyoLKqE)
 
 ## 3) Services definieren
 - aus einem fachlichen Kontext sollen technische Bausteine entstehen
@@ -50,6 +50,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - b) mehrere separate Microservice, also eigenständig laufende Prozesse
     - initial evtl zu komplex für einfache Context-Map mit kleinem Team
     - kann im späteren Projektverlauf Vorteile bringen
+  - siehe auch [Link](https://www.youtube.com/watch?v=6-Wu178sOEE)
 - Einfluss-Faktoren für die Entscheidung:
   - fachliche Komplexität
   - Größe des Entwickler-Teams
@@ -62,7 +63,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 
 ### 4.1) Beziehungen analysieren
 - alle Verknüpfungspunkte zwischen den Kontexten identifizieren
-- Abhängigkeiten bzw Richtungen betrachten 
+- Abhängigkeiten bzw Richtungen betrachten
   - Upstream, Downstream: liefernde und verbrauchende Kontexte
   - Conformist: Downstream muss sich anpassen, ohne Einfluss auf Upstream
   - Customer, Supplier: aktive Zusammenarbeit der Kontexte
@@ -76,16 +77,34 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - b) Choreografie (verteilte Steuerung)
 
 ### 4.2) APIs entwerfen
-- API Design 
-  - a) CRUD: eher technisch formuliert, orientiert an DB (für simplen Service)
-  - b) CQRS: Command & Queries, fachlich sprechende Aktionen
-  - c) Events: Benachrichtigung trifft ein oder wird versendet
+- API Konzept/Design
+  - generell sollten Schnittstellen fachlich modelliert werden, siehe auch [Link](https://www.youtube.com/watch?v=K2eiHDtoo-A) 
+  - a) CRUD: 
+    - eher technisch formuliert, orientiert sich an DB-Operationen 
+    - für simplen Service mit wenig Fachlogik geeignet
+    - bei größeren Systemen ein Anti-Pattern
+    - siehe auch [Link](https://www.youtube.com/watch?v=E9yx9w3GJk0)
+  - b) CQRS: 
+    - Commands (Aufträge) & Queries (Abfragen)
+    - schreibende und lesende Aktionen werden getrennt (Responsibility Segregation)
+    - fachlich sprechende Formulierungen (in der Gegenwart) nutzen
+    - kann auch auf die DB angewendet werden (eine DB für Write, eine für Read)
+    - bzw kombinierbar mit Event Sourcing
+    - siehe auch [Link](https://www.youtube.com/watch?v=cqNGAo-9pUE) bzw [Link](https://www.youtube.com/watch?v=hP-2ojGfd-Q)
+  - c) Events: 
+    - Benachrichtigungen austauschen über Ereignisse, die schon passiert sind
+    - in der Vergangenheit formuliert (zb RejectedPayment)
+    - Events können über Message-Queues verteilt werden
+    - kann CQRS sinnvoll ergänzen
+    - kann mit Event Sourcing kombiniert werden (DB Zustand darüber abbilden)
+    - siehe auch [Link](https://www.youtube.com/watch?v=vS7sCJ1uezY)
 - API Technologie
   - synchron
     - a) REST: für einfache Service-to-Service Kommunikation
-    - b) Reactive Stream (Spring Webflux)
     - b) gRPC: falls sehr performante Aufrufe nötig sind
     - c) GraphQL: zwischen Frontend und Backend (selektieren von Properties)
+    - d) Reactive Stream (Spring Webflux, non-blocking)
+    - siehe auch [Link](https://www.youtube.com/watch?v=NsdnGAAJfDk)
   - asynchron
     - Events: RabbitMQ, Kafka, etc.
 - API Daten Modelle
@@ -116,12 +135,16 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - ist komplizierter und braucht mehr Speicher
     - dafür viel schneller und man ist unabhängiger während der Verarbeitung
     - ist bei DDD üblich, denn Entitäten können in mehreren Bounded Contexts vorhanden sein
+  - siehe auch [Link](https://www.youtube.com/watch?v=tvs-h8aCjCg)
 
 ### 5.2) Interaktion mit der Datenbank
-- den aktuellen Zustand speichern oder Event Sourcing
+- wie wird gespeichert
+  - a) den aktuellen Zustand speichern 
+  - b) oder Event Sourcing, siehe auch [Link](https://www.youtube.com/watch?v=yFjzGRb8NOk) bzw [Link](https://www.youtube.com/watch?v=ss9wnixCGRY)
+- bei Bedarf schreibende und lesende Aktionen trennen, siehe CQRS
 - lokale Transaktionen (@Transactional) für zusammenhängende Geschäftsprozesse
 - Saga Pattern: service-übergreifende Prozesse (ggf. Kompensationsoperation)
-- Transaction Outbox Pattern: garantierte Event-Zustellung über extra DB-Tabelle
+- Transaction Outbox Pattern: garantierte Event-Zustellung über extra DB-Tabelle, siehe auch [Link](https://www.youtube.com/watch?v=tQw99alEVHo)
 
 ### 5.2) Datenbank designen
 - Datenbank Technologie  
@@ -132,20 +155,32 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - MongoDb, etc
     - Spring Data MongoDB
 - Datenbank Tabellen Design
-  - siehe auch DDD Tactical Design (Entity, Value Object, Aggregate)
   - große verschachtelte Graphen vermeiden, Konsistenzgrenzen einführen
   - wenn nötig mit IDs arbeiten statt direkt zu referenzieren
+  - siehe auch DDD Tactical Design (Entity, Value Object, Aggregate)
+  - und [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA) bzw [Link](https://www.youtube.com/watch?v=BFXuFb40P8k)
 
 ## 6) Services intern unterteilen
 - ein Service (bzw jedes Modul davon) wird in Schichten/Ringe aufgeteilt
-- jede Ebene sollte lose gekoppelt sein zur anderen (Interfaces, Spring Modulith)
-  - a) 3-Layer (API, Business, DB): von oben nach unten gerichtete Abhängigkeit
-  - b) Ports/Adapter, Hexagonal, Onion: von außen nach innen gerichtet
+- jede Ebene sollte lose gekoppelt sein zur anderen (Interfaces)
+- Die Beziehungen zwischen den Ebenen bzw Modulen kann zb Spring Modulith prüfen (ArcUnit)
+- Klassen in Java Packages möglichst unsichtbar halten für die Außenwelt (package private)
+- Varianten
+  - a) Ports/Adapter, Hexagonal, Onion, Clean-Arc
+    - innen liegt die fachliche Geschäftslogik
+    - außen die technische Infrastruktur
+    - von außen nach innen gerichtete Abhängigkeiten
+    - auch wenn der Aufruf an sich nach außen geht zur API/DB
+    - siehe auch [Link](https://www.youtube.com/watch?v=JubdZIdLQ4M) bzw [Link](https://youtu.be/BFXuFb40P8k?t=2295)
+  - b) alt: Schichten (zb UI, Business, DB):
+    - von oben nach unten gerichtete Abhängigkeit
+    - betrachtet nicht weitere umgebende Komponenten
 - die Geschäftslogik sollte möglichst frei von Technologien sein (wenig Spring)
   - bei eingehenden Aufrufen (Inbound/Driving-Adapter) ist ein Interface optional
-  - ausgehende Aufrufe (Outbound/Driven-Adapter) sollten entkoppelt sein (Port)
-  - so gibt es keinen direkten Bezug zur konkreten Technologie
-- das Framework hilft bei der Umgebung
+  - ausgehende Aufrufe (Outbound/Driven-Adapter) sollten entkoppelt sein
+  - wenn das Interface (Port) im Business-Package liegt, dann dreht sich die Abhängigkeit
+  - bedeutet es gibt keinen direkten Bezug zur Technologie/Implementierung
+- das Framework (zb Spring) hilft bei der Umgebung
   - API (in): zb @Controller, @XxxMapping, @XxxListener
   - API (out): zb XxxTemplate, XxxClient
   - DB: zb @Repository, @Entity, @Table, @Document
@@ -158,9 +193,11 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - kann irgendwann komplex werden (Service 1 -> Service 2 -> Service 3)
   - b) Domain Model / Object Oriented Design
     - Logik und Daten/State gemeinsam in einer Klasse (Rich Domain Model)
+    - evtl. 2 Entities verwenden, ein technisches und ein fachliches Object (Mapping)
     - keine Setter nutzen, sondern stattdessen fachliche Methoden
     - Services sind sehr klein und delegieren nur weiter an die Domain Objekte
     - besser erweiterbar/verständlich in einer komplexen Umgebung
+    - siehe auch [Link](https://youtu.be/VGhg6Tfxb60?t=1550)
 
 ## Architektur entwickelt sich weiter
 - ein perfekter Entwurf zum Projektstart ist unrealistisch
