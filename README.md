@@ -11,7 +11,8 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 
 ## 1) Fachliche Anforderungen ermitteln
 - Alle relevanten Personen zusammen bringen
-  - Meeting-Formate wie Event Storming oder Domain Storytelling, siehe auch [Link](https://www.youtube.com/watch?v=EaKWQ1rsaqQ) 
+  - Meeting-Formate wie Event Storming oder Domain Storytelling
+  - siehe auch [Link](https://www.youtube.com/watch?v=H1hzIFACDHE) bzw [Link](https://www.youtube.com/watch?v=EaKWQ1rsaqQ) 
   - analog mit Post-it's oder digital (zB Miro)
 - gemeinsam mit Fachexperten die Domäne verstehen
 - eine gemeinsame Sprache (Ubiquitous Language) finden
@@ -23,9 +24,10 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - Sicherheit (Authentifizierung, Autorisierung)
     - Wartbarkeit (Modularität, Testbarkeit, Dokumentation)
     - Benutzbarkeit (Barrierefreiheit, Fehlermeldungen)
+  - Beispiel: siehe [Link](https://youtu.be/nJtEvdxvfNQ?t=702)
 - Geschäftsprozesse bzw Use-Cases grafisch modellieren
-  - Akteure/Objekte bilden Knoten im Diagramm
-  - Aktivitäten sind Verknüpfungen/Kanten über beschriftete Pfeile
+  - Akteure/Objekte bilden Knoten im Diagramm (später Service oder Entity im Code)
+  - Aktivitäten sind Verknüpfungen/Kanten über beschriftete Pfeile (später API oder Methode)
 
 ## 2) Kontext-Übersicht erstellen
 - Die Domäne in Sub-Domänen unterteilen
@@ -85,14 +87,26 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - generell sollten Schnittstellen fachlich modelliert werden, siehe auch [Link](https://www.youtube.com/watch?v=K2eiHDtoo-A) 
   - a) CRUD: 
     - eher technisch formuliert, orientiert sich an DB-Operationen 
+    - API: POST, GET,  PUT, DELETE -> DB: Create, Read, Update, Delete
+    - Endpunkte werden anhand von Entitäten aufgebaut, also daten-getrieben (REST)
     - für simplen Service mit wenig Fachlogik geeignet
     - bei größeren Systemen ein Anti-Pattern
     - siehe auch [Link](https://www.youtube.com/watch?v=E9yx9w3GJk0)
   - b) CQRS: 
-    - Commands (Aufträge) & Queries (Abfragen)
+    - Commands: 
+      - Aufträge, imperativ, POST, Seiteneffekt, evtl. nicht idempotent
+      - kein PUT und DELETE wie bei REST, die Fachlichkeit entscheidet den Effekt
+      - Beispiel: /command/register-book
+    - Queries 
+      - Abfragen, GET, idempotent
+      - Query-Namen nutzen statt Entität
+      - Beispiel: /query/top-selling-books
     - schreibende und lesende Aktionen werden getrennt (Responsibility Segregation)
-    - fachlich sprechende Formulierungen (in der Gegenwart) nutzen
-    - kann auch auf die DB angewendet werden (eine DB für Write, eine für Read)
+    - fachlich sprechende Formulierungen in der Gegenwart nutzen
+    - Aktionen sind wichtiger als Entitäten, also nicht daten-getrieben denken
+    - nicht mehrere Aktionen in einem Request vermischen, separat halten
+    - Endpunkte via Kategorien, nicht DB-Entitäten (zb. /inventory/register-book) 
+    - CQRS kann auch auf die DB angewendet werden (eine DB für Write, eine für Read)
     - bzw kombinierbar mit Event Sourcing
     - siehe auch [Link](https://www.youtube.com/watch?v=cqNGAo-9pUE) bzw [Link](https://www.youtube.com/watch?v=hP-2ojGfd-Q)
   - c) Events: 
@@ -104,28 +118,39 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - siehe auch [Link](https://www.youtube.com/watch?v=vS7sCJ1uezY)
 - API Technologie
   - synchron
+    - a) Plain Http + CQRS
+      - Grundbausteine von Http: Url-Pfade, Http-Verben, Status-Codes, etc
+      - genügt als Basis für CQRS (fachliche API)
     - a) REST: 
       - für einfache Service-to-Service Kommunikation
       - Basiert stark auf den Grundprinzipien von Http
+      - nutzt technische CRUD Operationen
       - Zugriff auf Ressourcen über Url-Pfade
-      - nutzt HTTP-Verben und Status-Codes
+      - nutzt alle Http-Verben und Status-Codes
       - Paging, Sortierung, Filterung möglich
       - in der Praxis meist keine HATEOAS Links im Einsatz 
       - möglich Erweiterung: Reactive Stream (Spring Webflux, non-blocking)
     - b) gRPC: 
       - für sehr schnelle Service-to-Service Kommunikation
       - direkte Methodenaufrufe im anderen Service, keine Ressourcen
-      - nutzt das binäre Format Protobuf (statt Json) 
+      - nutzt das binäre Format Protobuf (statt Http/Json) 
       - daher nicht direkt lesbar, schwerer zu debuggen
     - c) GraphQL: 
       - zwischen Frontend und Backend
       - nur ein Endpunkt, nur POST-Requests, immer Status-Code 200 
       - kein Over/Under-Fetching, selektieren von Properties
       - Caching ist schwieriger umsetzbar
+      - Backend-Last abhängig von Frontend, potenzielles Risiko
     - siehe auch [Link](https://www.youtube.com/watch?v=NsdnGAAJfDk)
   - asynchron
-    - Events: RabbitMQ, Kafka, etc.
+    - Event-System: RabbitMQ, Kafka, etc.
     - Sonstiges: zb Webhooks, WebSockets, Server-Sent Events, etc
+- API Trigger
+  - a) ein einzelner Request, manuell ausgelöst
+  - b) Batch-Verarbeitung (viele Requests)
+  - c) Scheduling (zeitgesteuerte Requests)
+  - d) event-getrieben (kein klassischer Request)
+  - e) Streaming (kontinuierliche Verarbeitung eines Datenstroms)
 - API Daten Modelle
   - das Daten-Schema eines anderen Services soll evtl. nicht übernommen werden
   - bedeutet es muss ein Mapping an der API erfolgen
@@ -154,12 +179,17 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - ist komplizierter und braucht mehr Speicher
     - dafür viel schneller und man ist unabhängiger während der Verarbeitung
     - ist bei DDD üblich, denn Entitäten können in mehreren Bounded Contexts vorhanden sein
+  - c) Kombination/Hybrid-Ansatz, je nach Art der Daten, bzw je nach Last im System
   - siehe auch [Link](https://www.youtube.com/watch?v=tvs-h8aCjCg)
 
 ### 5.2) Interaktion mit der Datenbank
 - wie wird gespeichert
-  - a) den aktuellen Zustand speichern (CRUD)
-  - b) oder Event Sourcing, siehe auch [Link](https://www.youtube.com/watch?v=yFjzGRb8NOk) bzw [Link](https://www.youtube.com/watch?v=ss9wnixCGRY)
+  - a) den aktuellen Zustand speichern (CRUD), keine Historie
+  - b) oder Event Sourcing
+    - Events speichern (nur hinten anfügen, nichts löschen)
+    - Zustand per Replay ermitteln (alle Events „aufsummieren“)
+    - bzw Zwischenstände (Snapshots) festhalten für bessere Performance
+    - siehe auch [Link](https://www.youtube.com/watch?v=yFjzGRb8NOk) bzw [Link](https://www.youtube.com/watch?v=ss9wnixCGRY)
 - bei Bedarf CQRS
   - schreibende und lesende Aktionen trennen, also zwei separate Datenbanken
   - Query-Seite ist optimiert für schnelles Lesen, evtl. denormalisiertes Modell
@@ -189,6 +219,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - und [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA) bzw [Link](https://www.youtube.com/watch?v=BFXuFb40P8k)
 
 ## 6) Services intern unterteilen
+- obere Ebene fachlich, danach technisch (Package by Feature, siehe auch [Link](https://www.youtube.com/watch?v=B1d95I7-zsw))
 - ein Service (bzw jedes Modul davon) wird in Schichten/Ringe aufgeteilt
 - jede Ebene sollte lose gekoppelt sein zur anderen (Interfaces)
 - Die Beziehungen zwischen den Ebenen bzw Modulen kann zb Spring Modulith prüfen (ArcUnit)
@@ -198,6 +229,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - innen liegt die fachliche Geschäftslogik, außen die technische Infrastruktur
     - von außen nach innen gerichtete Abhängigkeiten, auch wenn der Aufruf nach außen geht
     - siehe auch [Link](https://www.youtube.com/watch?v=JubdZIdLQ4M) bzw [Link](https://youtu.be/BFXuFb40P8k?t=2295)
+    - Beispiel + Code, siehe [Link](https://reflectoring.io/spring-hexagonal/)
   - b) alt: Schichten (zb UI, Business, DB):
     - von oben nach unten gerichtete Abhängigkeit
     - betrachtet nicht weitere umgebende Komponenten
