@@ -1,9 +1,12 @@
 # project-architecture-guide
 
+## Intro
+
 In dieser Übersicht wird ein Schritt-für-Schritt Leitfaden aufgezeigt.  
 Er soll dabei helfen die passende Architektur für ein neues Projekt zu finden.  
-Generell haben Kontexte und Kopplung/Kohäsion entscheidenden Einfluss auf die Unterteilung.  
-Im fachlichen Abschnitt werden Konzepte von Domain Driven Design (DDD) verwendet.  
+Generell haben unabhängige Kontexte und Kopplung/Kohäsion einen entscheidenden Einfluss.  
+Es sind viele Konzepte von Domain Driven Design (DDD) enthalten.  
+Denn die Fachlichkeit sollte in der Technik abgebildet werden.  
 Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.  
 
 ## 1) Fachliche Anforderungen ermitteln
@@ -39,7 +42,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - Core: Kern der Anwendung, zentrale Business-Prozesse (früher umsetzen, evtl. höher skalieren)
   - Supporting: Unterstützt den Core durch Zusatz-Features (wird erst später umgesetzt)
   - Generic: kein Anwendungsbezug, aber ein notwendiges Übel (kann man dazu kaufen, zb. Nutzerverwaltung)
-- siehe auch Strategic Design von DDD, bzw [Link](https://www.youtube.com/watch?v=NvBsEnDgA4o) oder siehe auch [Link](https://www.youtube.com/watch?v=ttIRNyoLKqE)
+- siehe auch Strategic Design von DDD, bzw [Link](https://www.youtube.com/watch?v=NvBsEnDgA4o) und [Link](https://www.youtube.com/watch?v=ttIRNyoLKqE)
 
 ## 3) Services definieren
 - aus einem fachlichen Kontext sollen technische Bausteine entstehen
@@ -74,7 +77,8 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 - betrifft sowohl Services als auch Module in einem Service
 - Möglichkeiten für die Koordination der Beziehungen
   - a) Orchestration (zentraler Punkt, zb Workflow-Engines)
-  - b) Choreografie (verteilte Steuerung)
+  - b) Choreografie (verteilte Steuerung, zb über Events)
+  - siehe auch [Link](https://www.informatik-aktuell.de/entwicklung/methoden/orchestrieren-oder-choreografieren-ueber-eine-streitfrage-in-microservices-architekturen.html)
 
 ### 4.2) APIs entwerfen
 - API Konzept/Design
@@ -100,13 +104,28 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - siehe auch [Link](https://www.youtube.com/watch?v=vS7sCJ1uezY)
 - API Technologie
   - synchron
-    - a) REST: für einfache Service-to-Service Kommunikation
-    - b) gRPC: falls sehr performante Aufrufe nötig sind
-    - c) GraphQL: zwischen Frontend und Backend (selektieren von Properties)
-    - d) Reactive Stream (Spring Webflux, non-blocking)
+    - a) REST: 
+      - für einfache Service-to-Service Kommunikation
+      - Basiert stark auf den Grundprinzipien von Http
+      - Zugriff auf Ressourcen über Url-Pfade
+      - nutzt HTTP-Verben und Status-Codes
+      - Paging, Sortierung, Filterung möglich
+      - in der Praxis meist keine HATEOAS Links im Einsatz 
+      - möglich Erweiterung: Reactive Stream (Spring Webflux, non-blocking)
+    - b) gRPC: 
+      - für sehr schnelle Service-to-Service Kommunikation
+      - direkte Methodenaufrufe im anderen Service, keine Ressourcen
+      - nutzt das binäre Format Protobuf (statt Json) 
+      - daher nicht direkt lesbar, schwerer zu debuggen
+    - c) GraphQL: 
+      - zwischen Frontend und Backend
+      - nur ein Endpunkt, nur POST-Requests, immer Status-Code 200 
+      - kein Over/Under-Fetching, selektieren von Properties
+      - Caching ist schwieriger umsetzbar
     - siehe auch [Link](https://www.youtube.com/watch?v=NsdnGAAJfDk)
   - asynchron
     - Events: RabbitMQ, Kafka, etc.
+    - Sonstiges: zb Webhooks, WebSockets, Server-Sent Events, etc
 - API Daten Modelle
   - das Daten-Schema eines anderen Services soll evtl. nicht übernommen werden
   - bedeutet es muss ein Mapping an der API erfolgen
@@ -117,7 +136,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - zb OAuth2 Flow mit JWT (Spring Security Resource Server)
   - evtl. ein Gateway als zusätzlicher Schutz
 
-## 5) Datenfluss und Speicherart planen
+## 5) Datenfluss und Speicherung planen
 
 ### 5.1) Verteilte Datenhaltung koordinieren
 - jeder Service hat seine eigene logische Datenbank
@@ -139,22 +158,31 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 
 ### 5.2) Interaktion mit der Datenbank
 - wie wird gespeichert
-  - a) den aktuellen Zustand speichern 
+  - a) den aktuellen Zustand speichern (CRUD)
   - b) oder Event Sourcing, siehe auch [Link](https://www.youtube.com/watch?v=yFjzGRb8NOk) bzw [Link](https://www.youtube.com/watch?v=ss9wnixCGRY)
-- bei Bedarf schreibende und lesende Aktionen trennen, siehe CQRS
-- lokale Transaktionen (@Transactional) für zusammenhängende Geschäftsprozesse
-- Saga Pattern: service-übergreifende Prozesse (ggf. Kompensationsoperation)
-- Transaction Outbox Pattern: garantierte Event-Zustellung über extra DB-Tabelle, siehe auch [Link](https://www.youtube.com/watch?v=tQw99alEVHo)
+- bei Bedarf CQRS
+  - schreibende und lesende Aktionen trennen, also zwei separate Datenbanken
+  - Query-Seite ist optimiert für schnelles Lesen, evtl. denormalisiertes Modell
+  - Synchronisation/Aktualisierung notwendig per Event
+- Transaktionen
+  - Ausführung zusammenhängender Geschäftsprozesse (alles oder nichts)
+  - das System bleibt in einem gültigen Zustand
+  - a) lokale Transaktionen innerhalb einer Klasse (zb @Transactional) 
+  - b) Saga Pattern: service-übergreifende Prozesse (ggf. Kompensationsoperation)
+  - c) Transaction Outbox Pattern: garantierte Event-Zustellung über extra DB-Tabelle, siehe auch [Link](https://www.youtube.com/watch?v=tQw99alEVHo)
 
 ### 5.2) Datenbank designen
 - Datenbank Technologie  
   - a) SQL: strukturierte Daten, komplexe Abfragen
     - Postgres, MySql, etc
-    - Spring Data JPA (komplex) oder Data JDBC (einfach)
+    - Spring Data JPA / Hibernate: komplex, mit Cache/Persistence-Context und Dirty Checking 
+    - oder Data JDBC: einfacher, ohne Caching, führt SQL sofort aus, orientiert an DDD Aggregates
+    - siehe auch [Link](https://www.youtube.com/watch?v=AnIouYdwxo0)
   - b) NoSQL: unstrukturierte Daten, einfache Abfragen, gute Skalierung
-    - MongoDb, etc
-    - Spring Data MongoDB
+    - zb MongoDb via Spring Data MongoDB
+    - speichern von Objekten ohne extra Entity-Klasse & Repository möglich
 - Datenbank Tabellen Design
+  - Tabellen normalisieren, um Redundanzen zu minimieren
   - große verschachtelte Graphen vermeiden, Konsistenzgrenzen einführen
   - wenn nötig mit IDs arbeiten statt direkt zu referenzieren
   - siehe auch DDD Tactical Design (Entity, Value Object, Aggregate)
@@ -167,15 +195,13 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 - Klassen in Java Packages möglichst unsichtbar halten für die Außenwelt (package private)
 - Varianten
   - a) Ports/Adapter, Hexagonal, Onion, Clean-Arc
-    - innen liegt die fachliche Geschäftslogik
-    - außen die technische Infrastruktur
-    - von außen nach innen gerichtete Abhängigkeiten
-    - auch wenn der Aufruf an sich nach außen geht zur API/DB
+    - innen liegt die fachliche Geschäftslogik, außen die technische Infrastruktur
+    - von außen nach innen gerichtete Abhängigkeiten, auch wenn der Aufruf nach außen geht
     - siehe auch [Link](https://www.youtube.com/watch?v=JubdZIdLQ4M) bzw [Link](https://youtu.be/BFXuFb40P8k?t=2295)
   - b) alt: Schichten (zb UI, Business, DB):
     - von oben nach unten gerichtete Abhängigkeit
     - betrachtet nicht weitere umgebende Komponenten
-- die Geschäftslogik sollte möglichst frei von Technologien sein (wenig Spring)
+- die Geschäftslogik (Kern) sollte möglichst frei von Technologien sein (wenig Spring)
   - bei eingehenden Aufrufen (Inbound/Driving-Adapter) ist ein Interface optional
   - ausgehende Aufrufe (Outbound/Driven-Adapter) sollten entkoppelt sein
   - wenn das Interface (Port) im Business-Package liegt, dann dreht sich die Abhängigkeit
@@ -189,7 +215,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - Trennung von Logik und Daten/State (nicht klassisch objektorientiert)
     - DB Entitäten haben nur Daten/State (Anemic Domain Model)
     - alle Geschäftslogik liegt in Service-Klassen
-    - geeignet für einfache Prozesse
+    - geeignet für einfache Prozesse bzw CRUD-Systeme
     - kann irgendwann komplex werden (Service 1 -> Service 2 -> Service 3)
   - b) Domain Model / Object Oriented Design
     - Logik und Daten/State gemeinsam in einer Klasse (Rich Domain Model)
@@ -202,32 +228,38 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 ## Architektur entwickelt sich weiter
 - ein perfekter Entwurf zum Projektstart ist unrealistisch
 - die Architektur muss stetig verfeinert und angepasst werden
-- dabei sollten die Qualitätsmerkmale den Rahmen vorgeben
-- Gravierende Änderungen/Entscheidungen als ADR festhalten
+- dabei sollten die Qualitätsmerkmale den Rahmen vorgeben, siehe auch [Link](https://www.heise.de/blog/Woran-erkennt-man-eine-gute-Softwarearchitektur-7541527.html)
+- Gravierende Änderungen/Entscheidungen als ADR festhalten, siehe auch [Link](https://www.heise.de/hintergrund/Gut-dokumentiert-Architecture-Decision-Records-4664988.html)
 
 ## Technische Schulden 
 - diese lassen sich nie komplett vermeiden
+- Ursachen
+  - fehlende Architekturplanung bzw Anpassung
+  - veraltete oder unpassende Technologien
+  - kurzfristige Entscheidungen aus Zeitdruck
+  - fehlende Dokumentation und Wissensverlust
+  - unzureichende Qualitätssicherung
+- Beispiele
+  - Architektur
+    - enge Kopplung zwischen Komponenten
+    - Vermischung von Schichten
+    - keine klare Verantwortungszuordnung
+    - schlechte Fehlerbehandlung/Logging/Monitoring
+  - Framework & Infrastruktur
+    - veraltete Bibliotheken, Frameworks, Server
+    - unsichere Konfigurationen
+    - keine Automatisierung (CI/CD-Pipeline)
+    - schlechte Versionierung 
+  - Code
+    - duplizierte Abschnitte
+    - nicht sprechende Namen
+    - geringe Testabdeckung, bzw zu viel manuell
+    - Verletzung von Clean Code-Prinzipien (SOLID, DRY, KISS)
 - Umgang
   - kategorisieren nach Typ und Risiko
-  - sichtbar machen über Dokumentation 
+  - sichtbar machen über Dokumentation, zb TDR, siehe auch [Link](https://www.heise.de/blog/Technical-Debt-Records-Dokumentation-technischer-Schulden-9876115.html)
   - kommunizieren bei der Projektplanung
   - Auswirkungen/Kosten aufzeigen
-- nachfolgend ein paar Beispiele:
-- Architektur
-  - enge Kopplung zwischen Komponenten
-  - Vermischung von Schichten
-  - keine klare Verantwortungszuordnung
-  - schlechte Fehlerbehandlung/Logging/Monitoring
-- Framework & Infrastruktur
-  - veraltete Bibliotheken, Frameworks, Server
-  - unsichere Konfigurationen
-  - keine Automatisierung (CI/CD-Pipeline)
-  - schlechte Versionierung 
-- Code
-  - duplizierte Abschnitte
-  - nicht sprechende Namen
-  - geringe Testabdeckung, bzw zu viel manuell
-  - Verletzung von Clean Code-Prinzipien (SOLID, DRY, KISS)
 
 ## Dokumentation der Architektur
 - die Doku sollte eher schlank gehalten sein 
