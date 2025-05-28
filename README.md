@@ -32,13 +32,19 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
 ## 2) Kontext-Übersicht erstellen
 - Die Domäne in Sub-Domänen unterteilen
 - Jede Sub-Domäne kann ein oder mehrere Bounded Contexts haben, siehe auch [Link](https://www.youtube.com/watch?v=yQgCmMBNle4)
-- Bounded Context ermitteln und Context-Map (Landkarte) erstellen, siehe auch [Link](https://www.youtube.com/watch?v=c5H0APovhsw)
-  - die Frage klären, welche Bereiche gehören fachlich eng zusammen und welche nicht
-  - also wo besteht eine hohe Kohäsion (zusammengehörige Einheiten) 
-  - mit gleichzeitig geringe Kopplung zu anderen Bereichen
-  - jeder Kontext sollte möglichst isoliert und unabhängig sein, also wenig Abhängigkeiten haben
-  - wo gibt es Sprachgrenzen, also unterschiedliche Bedeutungen für denselben Begriff
-  - wie sieht die Verantwortlichkeit der Daten im Gesamtprozess aus
+- Bounded Contexts ermitteln und Context-Map (Landkarte) erstellen, siehe auch [Link](https://www.youtube.com/watch?v=c5H0APovhsw)
+  - Zusammengehörigkeit
+    - die Frage klären, welche Bereiche gehören fachlich eng zusammen und welche nicht
+    - also wo besteht eine hohe Kohäsion mit gleichzeitig geringe Kopplung zu anderen Bereichen
+    - jeder Kontext sollte möglichst isoliert und unabhängig sein, also wenig Abhängigkeiten haben
+  - Sprachgrenzen
+    - wo gibt es sprachliche Differenzen, also unterschiedliche Bedeutungen für denselben Begriff
+    - ein Domänen-Objekt soll nicht global für alle Bereiche gelten
+    - stattdessen hat jeder Kontext sein eigenes individuelles Modell
+  - Verantwortung
+    - wie sieht die Verantwortlichkeit der Daten im Gesamtprozess aus
+    - welcher Kontext besitzt welche Daten, wo gibt es Abhängigkeiten
+    - wichtig für die spätere Verknüpfung der Kontexte
 - Schnitte einführen, um Kontext-Grenzen deutlich zu machen
 - Kontexte bzw Sub-Domänen kategorisieren
   - Core: Kern der Anwendung, zentrale Business-Prozesse (früher umsetzen, evtl. höher skalieren)
@@ -96,6 +102,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - Commands: 
       - Aufträge, imperativ, POST, Seiteneffekt, evtl. nicht idempotent
       - kein PUT und DELETE wie bei REST, die Fachlichkeit entscheidet den Effekt
+      - kann via Request oder Message versendet werden
       - Beispiel: /command/register-book
     - Queries 
       - Abfragen, GET, idempotent
@@ -104,8 +111,8 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - schreibende und lesende Aktionen werden getrennt (Responsibility Segregation)
     - fachlich sprechende Formulierungen in der Gegenwart nutzen
     - Aktionen sind wichtiger als Entitäten, also nicht daten-getrieben denken
+    - Endpunkte via Kategorien, nicht Entitäten (zb. /inventory/register-book)
     - nicht mehrere Aktionen in einem Request vermischen, separat halten
-    - Endpunkte via Kategorien, nicht DB-Entitäten (zb. /inventory/register-book) 
     - CQRS kann auch auf die DB angewendet werden (eine DB für Write, eine für Read)
     - bzw kombinierbar mit Event Sourcing
     - siehe auch [Link](https://www.youtube.com/watch?v=cqNGAo-9pUE) bzw [Link](https://www.youtube.com/watch?v=hP-2ojGfd-Q)
@@ -117,11 +124,11 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - kann mit Event Sourcing kombiniert werden (DB Zustand darüber abbilden)
     - siehe auch [Link](https://www.youtube.com/watch?v=vS7sCJ1uezY)
 - API Technologie
-  - synchron
+  - synchron (Request/Response)
     - a) Plain Http + CQRS
       - Grundbausteine von Http: Url-Pfade, Http-Verben, Status-Codes, etc
       - genügt als Basis für CQRS (fachliche API)
-    - a) REST: 
+    - b) REST: 
       - für einfache Service-to-Service Kommunikation
       - Basiert stark auf den Grundprinzipien von Http
       - nutzt technische CRUD Operationen
@@ -130,12 +137,12 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
       - Paging, Sortierung, Filterung möglich
       - in der Praxis meist keine HATEOAS Links im Einsatz 
       - möglich Erweiterung: Reactive Stream (Spring Webflux, non-blocking)
-    - b) gRPC: 
+    - c) gRPC: 
       - für sehr schnelle Service-to-Service Kommunikation
       - direkte Methodenaufrufe im anderen Service, keine Ressourcen
       - nutzt das binäre Format Protobuf (statt Http/Json) 
       - daher nicht direkt lesbar, schwerer zu debuggen
-    - c) GraphQL: 
+    - d) GraphQL: 
       - zwischen Frontend und Backend
       - nur ein Endpunkt, nur POST-Requests, immer Status-Code 200 
       - kein Over/Under-Fetching, selektieren von Properties
@@ -198,7 +205,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - Ausführung zusammenhängender Geschäftsprozesse (alles oder nichts)
   - das System bleibt in einem gültigen Zustand
   - a) lokale Transaktionen innerhalb einer Klasse (zb @Transactional) 
-  - b) Saga Pattern: service-übergreifende Prozesse (ggf. Kompensationsoperation)
+  - b) Saga Pattern: service-übergreifende Transaktion (ggf. Kompensationsoperation)
   - c) Transaction Outbox Pattern: garantierte Event-Zustellung über extra DB-Tabelle, siehe auch [Link](https://www.youtube.com/watch?v=tQw99alEVHo)
 
 ### 5.2) Datenbank designen
