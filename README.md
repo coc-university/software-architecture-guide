@@ -2,15 +2,22 @@
 
 ## Intro
 
-In dieser Übersicht wird ein Schritt-für-Schritt Leitfaden aufgezeigt.  
-Er soll dabei helfen die passende Architektur für ein neues Projekt zu finden.  
-Generell haben unabhängige Kontexte und Kopplung/Kohäsion einen entscheidenden Einfluss.  
-Es sind viele Konzepte von Domain Driven Design (DDD) enthalten.  
-Denn die Fachlichkeit sollte in der Technik abgebildet werden.  
-Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.  
+- In dieser Übersicht wird ein Leitfaden für eine Software-Architektur aufgezeigt
+  - Schritt-für-Schritt werden aufbauend einzelne Abschnitte beschrieben
+  - beginnend bei der Fachlichkeit, gefolgt von der technischen Umsetzung
+  - es soll dabei helfen den passenden Aufbau für ein Projekt zu finden
+  - generell spielen unabhängige Kontexte und Kopplung/Kohäsion eine große Rolle
+  - es sind viele Konzepte von Domain Driven Design (DDD) enthalten
+  - denn die fachlichen Abläufe sollten in der Technik abgebildet werden
+  - bei den Technologien wird Java & Spring Boot beispielhaft referenziert
+- Außerdem werden [Tipps für den Projektverlauf](#Projektverlauf-überwachen) gegeben
 
-## 1) Fachliche Anforderungen ermitteln
+## 1) Fachliche Anforderungen sammeln und visualisieren
+
+![Bild](images/project-architecture-guide-step-1.drawio.png)
+
 - Alle relevanten Personen zusammen bringen
+  - Fachexperten, Techniker, Projektleitung, etc
   - Meeting-Formate wie Event Storming oder Domain Storytelling
   - siehe auch [Link](https://www.youtube.com/watch?v=H1hzIFACDHE) bzw [Link](https://www.youtube.com/watch?v=EaKWQ1rsaqQ) 
   - analog mit Post-it's oder digital (zB Miro)
@@ -24,15 +31,35 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - Sicherheit (Authentifizierung, Autorisierung)
     - Wartbarkeit (Modularität, Testbarkeit, Dokumentation)
     - Benutzbarkeit (Barrierefreiheit, Fehlermeldungen)
-  - Beispiel: siehe [Link](https://youtu.be/nJtEvdxvfNQ?t=702)
+    - siehe auch [Link](https://quality.arc42.org)
+  - Praxis-Beispiel: siehe [Link](https://youtu.be/nJtEvdxvfNQ?t=702)
 - Geschäftsprozesse bzw Use-Cases grafisch modellieren
   - Akteure/Objekte bilden Knoten im Diagramm (später Service oder Entity im Code)
   - Aktivitäten sind Verknüpfungen/Kanten über beschriftete Pfeile (später API oder Methode)
 
-## 2) Kontext-Übersicht erstellen
-- Die Domäne in Sub-Domänen unterteilen
-- Jede Sub-Domäne kann ein oder mehrere Bounded Contexts haben, siehe auch [Link](https://www.youtube.com/watch?v=yQgCmMBNle4)
-- Bounded Contexts ermitteln und Context-Map (Landkarte) erstellen, siehe auch [Link](https://www.youtube.com/watch?v=c5H0APovhsw)
+## 2) Fachliche Kontext-Übersicht erstellen
+
+![Bild](images/project-architecture-guide-step-2.drawio.png)
+
+## 2.1) Kontexte ermitteln
+- Die Domäne in Sub-Domänen und Bounded Contexts unterteilen
+  - Sub-Domäne
+    - Teil vom Problem-Raum
+    - fachlicher Teilbereich der Gesamt-Domäne
+    - ergibt sich ganz natürlich in den Gesprächen mit Fachexperten
+    - kann ein oder mehrere Bounded Contexts haben
+    - zb "Bestellung", "Zahlung" oder "Produktkatalog" in E-Commerce
+  - Bounded Context
+    - Teil vom Lösungsraum
+    - der Kontext entsteht aus der fachlichen Sub-Domäne (Übergang Fachlichkeit zu Technik)
+    - wird explizit modelliert während des Projekts anhand von Randbedingungen
+    - Begrenzung der Gültigkeit eines bestimmten Modells und der zugehörigen Sprache
+    - zb "Order-Context", "Payment-Context" oder Product-Context in E-Commerce
+    - ein Kontext kann später zu einem technischen Service werden, muss aber nicht
+    - ebenso sind mehrere Kontexte als Module in einem Service möglich
+  - siehe auch [Link](https://www.youtube.com/watch?v=yQgCmMBNle4)
+- Context-Map (Landkarte) erstellen, siehe auch [Link](https://www.youtube.com/watch?v=c5H0APovhsw)
+- Schnitte einführen, um Kontexte deutlich voneinander abzugrenzen
   - Zusammengehörigkeit
     - die Frage klären, welche Bereiche gehören fachlich eng zusammen und welche nicht
     - also wo besteht eine hohe Kohäsion mit gleichzeitig geringe Kopplung zu anderen Bereichen
@@ -45,15 +72,33 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - wie sieht die Verantwortlichkeit der Daten im Gesamtprozess aus
     - welcher Kontext besitzt welche Daten, wo gibt es Abhängigkeiten
     - wichtig für die spätere Verknüpfung der Kontexte
-- Schnitte einführen, um Kontext-Grenzen deutlich zu machen
-- Kontexte bzw Sub-Domänen kategorisieren
-  - Core: Kern der Anwendung, zentrale Business-Prozesse (früher umsetzen, evtl. höher skalieren)
-  - Supporting: Unterstützt den Core durch Zusatz-Features (wird erst später umgesetzt)
-  - Generic: kein Anwendungsbezug, aber ein notwendiges Übel (kann man dazu kaufen, zb. Nutzerverwaltung)
+  - Kategorisierung
+    - Core: Kern der Anwendung, zentrale Business-Prozesse (früher umsetzen, evtl. höher skalieren)
+    - Supporting: Unterstützt den Core durch Zusatz-Features (wird erst später umgesetzt)
+    - Generic: kein Anwendungsbezug, aber ein notwendiges Übel (kann man dazu kaufen, zb. Nutzerverwaltung)
 - siehe auch Strategic Design von DDD, bzw [Link](https://www.youtube.com/watch?v=NvBsEnDgA4o) und [Link](https://www.youtube.com/watch?v=ttIRNyoLKqE)
 
-## 3) Services definieren
-- aus einem fachlichen Kontext sollen technische Bausteine entstehen
+## 2.2) Kontext-Beziehungen definieren
+- alle Beziehungen zwischen Kontexten identifizieren
+- Abhängigkeiten bzw Richtungen betrachten
+  - Upstream, Downstream: liefernde und verbrauchende Kontexte
+  - Conformist: Downstream muss sich anpassen, ohne Einfluss auf Upstream
+  - Customer/Supplier: aktive Zusammenarbeit der Kontexte
+  - Partnership: beide Seiten sind gleichberechtigt
+  - Open Host Service: Kontext bietet Schnittstelle für beliebige Nutzer
+  - Shared Kernel: gemeinsame Bibliothek (Lib)
+  - Separate Ways: Kontexte haben nichts miteinander zu tun und bleiben unabhängig
+- in DDD: Context Mapping
+- die Einordnung in eine Kategorie hat Einfluss auf die späteren APIs
+- also wie stark die Kopplung ist und wo Modellgrenzen liegen
+- Entkopplung der Modelle über Anti Corruption Layer (Mapping) möglich
+
+## 3) Technische Services und Module festlegen
+
+![Bild](images/project-architecture-guide-step-3.drawio.png)
+
+- aus den fachlichen Kontexten sollen technische Bausteine entstehen
+- jeder Kontext kann ein eigenständiger Service sein, oder nur ein Modul im Service
 - Aufteilung
   - a) ein Service mit mehreren fachlichen Modulen (modular Monolith = Modulith)
     - über Java Packages oder via Maven-Module
@@ -61,6 +106,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - b) mehrere separate Microservice, also eigenständig laufende Prozesse
     - initial evtl zu komplex für einfache Context-Map mit kleinem Team
     - kann im späteren Projektverlauf Vorteile bringen
+    - Deployment-Automatisierung über Pipeline sinnvoll
   - siehe auch [Link](https://www.youtube.com/watch?v=6-Wu178sOEE)
 - Einfluss-Faktoren für die Entscheidung:
   - fachliche Komplexität
@@ -68,37 +114,29 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - Entwicklungsgeschwindigkeit (wie oft gibt es Releases/Deployments)
   - Betrieb (Skalierung, Sicherheit, Resilienz, Wartung, Kosten)
   - Datenhaltung
-  - Technologie-Vielfalt 
+  - Technologie-Vielfalt
 
-## 4) Kontexte verknüpfen
+## 4) Services/Module verknüpfen
 
-### 4.1) Beziehungen analysieren
-- alle Verknüpfungspunkte zwischen den Kontexten identifizieren
-- Abhängigkeiten bzw Richtungen betrachten
-  - Upstream, Downstream: liefernde und verbrauchende Kontexte
-  - Conformist: Downstream muss sich anpassen, ohne Einfluss auf Upstream
-  - Customer, Supplier: aktive Zusammenarbeit der Kontexte
-  - Partnership: beide Seiten sind gleichberechtigt
-  - Open Host Service: Kontext bietet Schnittstelle für beliebige Nutzer
-  - Shared Kernel: gemeinsame Bibliothek (Lib)
-  - Separate Ways: Kontexte haben nichts miteinander zu tun und bleiben unabhängig
-- betrifft sowohl Services als auch Module in einem Service
-- Möglichkeiten für die Koordination der Beziehungen
-  - a) Orchestration (zentraler Punkt, zb Workflow-Engines)
-  - b) Choreografie (verteilte Steuerung, zb über Events)
+![Bild](images/project-architecture-guide-step-4-and-5.drawio.png)
+
+### 4.1) Koordination
+- die Geschäftsprozesse sollen in der Technik abgebildet werden
+- falls dies über mehrere Services hinweg geschieht, ist eine Koordination notwendig
+  - a) Orchestration 
+    - ein zentraler Punkt steuert aktiv die einzelnen Services
+    - klare Kontrolle über den Prozessfluss, aber zentrale Abhängigkeit/Kopplung
+    - zb Workflow-Engines
+  - b) Choreografie 
+    - verteilte Steuerung in den Services
+    - hohe Entkopplung und Flexibilität, aber Fluss ist weniger transparent
+    - zb über Events
   - siehe auch [Link](https://www.informatik-aktuell.de/entwicklung/methoden/orchestrieren-oder-choreografieren-ueber-eine-streitfrage-in-microservices-architekturen.html)
 
 ### 4.2) APIs entwerfen
 - API Konzept/Design
-  - generell sollten Schnittstellen fachlich modelliert werden, siehe auch [Link](https://www.youtube.com/watch?v=K2eiHDtoo-A) 
-  - a) CRUD: 
-    - eher technisch formuliert, orientiert sich an DB-Operationen 
-    - API: POST, GET,  PUT, DELETE -> DB: Create, Read, Update, Delete
-    - Endpunkte werden anhand von Entitäten aufgebaut, also daten-getrieben (REST)
-    - für simplen Service mit wenig Fachlogik geeignet
-    - bei größeren Systemen ein Anti-Pattern
-    - siehe auch [Link](https://www.youtube.com/watch?v=E9yx9w3GJk0)
-  - b) CQRS: 
+  - generell sollten Schnittstellen fachlich modelliert werden, siehe auch [Link](https://www.youtube.com/watch?v=K2eiHDtoo-A)
+  - a) CQRS: 
     - Commands: 
       - Aufträge, imperativ, POST, Seiteneffekt, evtl. nicht idempotent
       - kein PUT und DELETE wie bei REST, die Fachlichkeit entscheidet den Effekt
@@ -116,6 +154,13 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - CQRS kann auch auf die DB angewendet werden (eine DB für Write, eine für Read)
     - bzw kombinierbar mit Event Sourcing
     - siehe auch [Link](https://www.youtube.com/watch?v=cqNGAo-9pUE) bzw [Link](https://www.youtube.com/watch?v=hP-2ojGfd-Q)
+  - b) CRUD:
+    - eher technisch formuliert, orientiert sich an DB-Operationen
+    - API: POST, GET, PUT, DELETE -> DB: Create, Read, Update, Delete
+    - Endpunkte werden anhand von Entitäten aufgebaut, also daten-getrieben (REST)
+    - für simplen Service mit wenig Fachlogik geeignet
+    - bei größeren Systemen ein Anti-Pattern
+    - siehe auch [Link](https://www.youtube.com/watch?v=E9yx9w3GJk0)
   - c) Events: 
     - Benachrichtigungen austauschen über Ereignisse, die schon passiert sind
     - in der Vergangenheit formuliert (zb RejectedPayment)
@@ -132,7 +177,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
       - für einfache Service-to-Service Kommunikation
       - Basiert stark auf den Grundprinzipien von Http
       - nutzt technische CRUD Operationen
-      - Zugriff auf Ressourcen über Url-Pfade
+      - Zugriff auf Ressourcen über Url-Pfade (zb /books)
       - nutzt alle Http-Verben und Status-Codes
       - Paging, Sortierung, Filterung möglich
       - in der Praxis meist keine HATEOAS Links im Einsatz 
@@ -144,7 +189,7 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
       - daher nicht direkt lesbar, schwerer zu debuggen
     - d) GraphQL: 
       - zwischen Frontend und Backend
-      - nur ein Endpunkt, nur POST-Requests, immer Status-Code 200 
+      - nur ein Endpunkt (/graphql), nur POST-Requests, immer Status-Code 200 
       - kein Over/Under-Fetching, selektieren von Properties
       - Caching ist schwieriger umsetzbar
       - Backend-Last abhängig von Frontend, potenzielles Risiko
@@ -225,7 +270,10 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - siehe auch DDD Tactical Design (Entity, Value Object, Aggregate)
   - und [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA) bzw [Link](https://www.youtube.com/watch?v=BFXuFb40P8k)
 
-## 6) Services intern unterteilen
+## 6) Service bzw Modul intern unterteilen
+
+![Bild](images/project-architecture-guide-step-6.drawio.png)
+
 - obere Ebene fachlich, danach technisch (Package by Feature, siehe auch [Link](https://www.youtube.com/watch?v=B1d95I7-zsw))
 - ein Service (bzw jedes Modul davon) wird in Schichten/Ringe aufgeteilt
 - jede Ebene sollte lose gekoppelt sein zur anderen (Interfaces)
@@ -264,13 +312,43 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
     - besser erweiterbar/verständlich in einer komplexen Umgebung
     - siehe auch [Link](https://youtu.be/VGhg6Tfxb60?t=1550)
 
-## Architektur entwickelt sich weiter
+## Projektverlauf überwachen
+
+### 1) Architektur entwickelt sich weiter
 - ein perfekter Entwurf zum Projektstart ist unrealistisch
 - die Architektur muss stetig verfeinert und angepasst werden
 - dabei sollten die Qualitätsmerkmale den Rahmen vorgeben, siehe auch [Link](https://www.heise.de/blog/Woran-erkennt-man-eine-gute-Softwarearchitektur-7541527.html)
 - Gravierende Änderungen/Entscheidungen als ADR festhalten, siehe auch [Link](https://www.heise.de/hintergrund/Gut-dokumentiert-Architecture-Decision-Records-4664988.html)
 
-## Technische Schulden 
+### 2) Subjektive Empfehlungen für den Projektverlauf
+- Kontexte nach bestem Wissen definieren und stetig Beziehungen prüfen
+  - sind die Modellgrenzen nützlich oder behindern sie eher?
+  - sind Abhängigkeiten doch anders gerichtet als anfangs gedacht?
+- zu Beginn eher mit einem modularen Monolithen starten, später bei Bedarf Microservices
+  - ggf. einzelne Module herauslösen zu eigenen Services
+  - orientiert sich an nicht-funktionalen Anforderungen und Projektteam
+- erste APIs direkt mit fachlichen CQRS-Endpunkten aufsetzen 
+  - mit einfachen synchronen Schritten beginnen
+  - bei steigender Komplexität auf asynchrone Abläufe umstellen
+  - erst dann weitere System-Komponenten (zb Message-Queue) integrieren
+- die Datenbank möglichst nicht ändern im Projektverlauf
+  - eher etablierte SQL-Technologien nutzen, falls Strukturen ersichtlich sind 
+  - ggf. Teile ohne Schema in Json-Spalte speichern
+  - Zustände anfangs direkt ablegen (einfacher), also ohne Event Sourcing
+- Microservices intern einfach halten
+  - Logik in Service-Klassen gruppieren, falls Komplexität überschaubar bleibt
+  - Interfaces erst bei Bedarf einführen im Projektverlauf
+  - ggf. Ports/Adapter nutzen in Richtung ausgehender Aufrufe (DB/API)
+  - Spring in Business-Logik nicht schlimm (Austausch vom Framework unrealistisch)
+  - möglichst viele Klassen auf package-private stellen, um Kopplungen zu verhindern  
+- fortlaufend die Code-Qualität prüfen
+  - von Anfang an Tests erstellen und erweitern
+    - Fokus auf Qualität statt Menge/Code-Coverage
+    - also lieber wenige Test, aber genau auf die fachlichen UseCases bezogen
+    - statt viele technische Randbedingen zu prüfen, die Qualität vorgaukeln 
+  - Refactoring durchführen, also Klassenstrukturen/Methoden gerade ziehen 
+
+### 3) Mit technische Schulden umgehen
 - diese lassen sich nie komplett vermeiden
 - Ursachen
   - fehlende Architekturplanung bzw Anpassung
@@ -300,14 +378,15 @@ Bei den Technologien wird Java & Spring Boot beispielhaft referenziert.
   - kommunizieren bei der Projektplanung
   - Auswirkungen/Kosten aufzeigen
 
-## Dokumentation der Architektur
+### 4) Dokumentation der Architektur
 - die Doku sollte eher schlank gehalten sein 
 - so können Änderungen einfach erkannt und integriert werden
 - der Fokus sollte auf konstante/stabile Bereiche gelegt werden
 - Elemente die sich noch häufig ändern nur auf hoher Flugebene anreißen
-- Arc42: https://arc42.de/overview/
-- Canvas: https://canvas.arc42.org
-- https://github.com/feststelltaste/software-component-canvas
+- Beispiele
+  - Arc42: https://arc42.de/overview/
+  - Canvas: https://canvas.arc42.org
+  - https://github.com/feststelltaste/software-component-canvas
 
-## Ablauf
-![project-architecture-guide.drawio.pdf](project-architecture-guide.drawio.png)
+## Gesamter Ablauf des Architektur-Leitfadens
+![Ablauf](images/project-architecture-guide.drawio.png)
