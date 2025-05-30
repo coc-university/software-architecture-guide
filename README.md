@@ -314,13 +314,7 @@
 
 ## Projektverlauf überwachen
 
-### 1) Architektur entwickelt sich weiter
-- ein perfekter Entwurf zum Projektstart ist unrealistisch
-- die Architektur muss stetig verfeinert und angepasst werden
-- dabei sollten die Qualitätsmerkmale den Rahmen vorgeben, siehe auch [Link](https://www.heise.de/blog/Woran-erkennt-man-eine-gute-Softwarearchitektur-7541527.html)
-- Gravierende Änderungen/Entscheidungen als ADR festhalten, siehe auch [Link](https://www.heise.de/hintergrund/Gut-dokumentiert-Architecture-Decision-Records-4664988.html)
-
-### 2) Subjektive Empfehlungen für den Projektverlauf
+### 1) Subjektive Empfehlungen für den Projektstart und Verlauf
 - Kontexte nach bestem Wissen definieren und stetig Beziehungen prüfen
   - sind die Modellgrenzen nützlich oder behindern sie eher?
   - sind Abhängigkeiten doch anders gerichtet als anfangs gedacht?
@@ -335,7 +329,7 @@
   - eher etablierte SQL-Technologien nutzen, falls Strukturen ersichtlich sind 
   - ggf. Teile ohne Schema in Json-Spalte speichern
   - Zustände anfangs direkt ablegen (einfacher), also ohne Event Sourcing
-- Microservices intern einfach halten
+- Microservice bzw Modul intern einfach halten
   - Logik in Service-Klassen gruppieren, falls Komplexität überschaubar bleibt
   - Interfaces erst bei Bedarf einführen im Projektverlauf
   - ggf. Ports/Adapter nutzen in Richtung ausgehender Aufrufe (DB/API)
@@ -347,6 +341,12 @@
     - also lieber wenige Test, aber genau auf die fachlichen UseCases bezogen
     - statt viele technische Randbedingen zu prüfen, die Qualität vorgaukeln 
   - Refactoring durchführen, also Klassenstrukturen/Methoden gerade ziehen 
+
+### 2) Architektur entwickelt sich weiter
+- ein perfekter Entwurf zum Projektstart ist unrealistisch
+- die Architektur muss stetig verfeinert und angepasst werden
+- dabei sollten die Qualitätsmerkmale den Rahmen vorgeben, siehe auch [Link](https://www.heise.de/blog/Woran-erkennt-man-eine-gute-Softwarearchitektur-7541527.html)
+- Gravierende Änderungen/Entscheidungen als ADR festhalten, siehe auch [Link](https://www.heise.de/hintergrund/Gut-dokumentiert-Architecture-Decision-Records-4664988.html)
 
 ### 3) Mit technische Schulden umgehen
 - diese lassen sich nie komplett vermeiden
