@@ -65,23 +65,24 @@
     - ebenso sind mehrere Kontexte als Module in einem Service möglich
   - siehe auch [Link](https://www.youtube.com/watch?v=yQgCmMBNle4)
 - Context-Map (Landkarte) erstellen, siehe auch [Link](https://www.youtube.com/watch?v=c5H0APovhsw)
-- Schnitte einführen, um Kontexte deutlich voneinander abzugrenzen
+- Schnitte einführen, um Kontexte deutlich voneinander abzugrenzen, je nach:
   - Zusammengehörigkeit
     - die Frage klären, welche Bereiche gehören fachlich eng zusammen und welche nicht
     - also wo besteht eine hohe Kohäsion mit gleichzeitig geringe Kopplung zu anderen Bereichen
-    - jeder Kontext sollte möglichst isoliert und unabhängig sein, also wenig Abhängigkeiten haben
-  - Sprachgrenzen
+    - jeder Kontext sollte möglichst isoliert und unabhängig bestehen können
+  - Modell- und Sprachgrenzen
     - wo gibt es sprachliche Differenzen, also unterschiedliche Bedeutungen für denselben Begriff
-    - ein Domänen-Objekt soll nicht global für alle Bereiche gelten
+    - ein Domänen-Objekt soll nicht global einheitlich für alle Bereiche gelten
     - stattdessen hat jeder Kontext sein eigenes individuelles Modell
+    - Beispiel "Bestellung": Unterschied zwischen Vertrieb und Logistik, aber gleicher Name
   - Verantwortung
     - wie sieht die Verantwortlichkeit der Daten im Gesamtprozess aus
     - welcher Kontext besitzt welche Daten, wo gibt es Abhängigkeiten
     - wichtig für die spätere Verknüpfung der Kontexte
-  - Kategorisierung
-    - Core: Kern der Anwendung, zentrale Business-Prozesse (früher umsetzen, evtl. höher skalieren)
-    - Supporting: Unterstützt den Core durch Zusatz-Features (wird erst später umgesetzt)
-    - Generic: kein Anwendungsbezug, aber ein notwendiges Übel (kann man dazu kaufen, zb. Nutzerverwaltung)
+- Kontexte in Kategorien einteilen
+  - Core: Kern der Anwendung, zentrale Business-Prozesse (früher umsetzen, evtl. höher skalieren)
+  - Supporting: Unterstützt den Core durch Zusatz-Features (wird erst später umgesetzt)
+  - Generic: kein Anwendungsbezug, aber ein notwendiges Übel (kann man dazu kaufen, zb. Nutzerverwaltung)
 - siehe auch Strategic Design von DDD, bzw [Link](https://www.youtube.com/watch?v=NvBsEnDgA4o) und [Link](https://www.youtube.com/watch?v=ttIRNyoLKqE)
 
 ## 2.2) Kontext-Beziehungen definieren
@@ -97,7 +98,10 @@
 - in DDD: Context Mapping
 - die Einordnung in eine Kategorie hat Einfluss auf die späteren APIs
 - also wie stark die Kopplung ist und wo Modellgrenzen liegen
-- Entkopplung der Modelle über Anti Corruption Layer (Mapping) möglich
+- Entkopplung der Modelle über Anti Corruption Layer (ACL) möglich
+  - das Modell eines anderen Kontextes soll evtl. nicht übernommen werden
+  - bedeutet es muss ein Mapping an der API erfolgen
+  - so ist der Kern eines Kontextes unabhängig gegenüber Änderungen am anderen Modell
 
 ## 3) Technische Services und Module festlegen
 
@@ -129,14 +133,18 @@
 ### 4.1) Koordination
 - die Geschäftsprozesse sollen in der Technik abgebildet werden
 - falls dies über mehrere Services hinweg geschieht, ist eine Koordination notwendig
+- Saga Pattern: service-übergreifende Transaktion (ggf. Kompensationsoperation) via:
   - a) Orchestration 
     - ein zentraler Punkt steuert aktiv die einzelnen Services
     - klare Kontrolle über den Prozessfluss, aber zentrale Abhängigkeit/Kopplung
+    - Kompensation: Orchestrator kennt die Reihenfolge und führt Gegenaktionen aus
     - zb Workflow-Engines
   - b) Choreografie 
     - verteilte Steuerung in den Services
-    - hohe Entkopplung und Flexibilität, aber Fluss ist weniger transparent
-    - zb über Events
+      - a) über Events und einen Message-Broker
+      - b) direkte Http-Aufrufe (keine Entkopplung, eher verteilte Orchestrierung)
+    - hohe Entkopplung und Flexibilität möglich, aber Fluss ist weniger transparent
+    - Kompensation: hören auf Events von anderen Services (zb XxxFailed)
   - siehe auch [Link](https://www.informatik-aktuell.de/entwicklung/methoden/orchestrieren-oder-choreografieren-ueber-eine-streitfrage-in-microservices-architekturen.html)
 
 ### 4.2) APIs entwerfen
@@ -219,12 +227,6 @@
   - c) Scheduling (zeitgesteuerte Requests)
   - d) event-getrieben (kein klassischer Request)
   - e) Streaming (kontinuierliche Verarbeitung eines Datenstroms)
-- API Daten Modelle
-  - das Daten-Schema eines anderen Services soll evtl. nicht übernommen werden
-  - bedeutet es muss ein Mapping an der API erfolgen
-  - so ist der Service unabhängiger gegenüber Änderungen
-  - bzw Änderungen betreffen nicht direkt den Kern der Anwendung
-  - in DDD: Anti Corruption Layer (ACL)
 - API Security 
   - zb OAuth2 Flow mit JWT (Spring Security Resource Server)
   - evtl. ein Gateway als zusätzlicher Schutz
