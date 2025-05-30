@@ -14,9 +14,8 @@
   - [1) Fachliche Anforderungen sammeln und visualisieren](#1-Fachliche-Anforderungen-sammeln-und-visualisieren)
   - [2) Fachliche Kontext-Übersicht erstellen](#2-Fachliche-Kontext-Übersicht-erstellen)
   - [3) Technische Services und Module festlegen](#3-Technische-Services-und-Module-festlegen)
-  - [4) Services/Module verknüpfen](#4-ServicesModule-verknüpfen)
-  - [5) Datenfluss und Speicherung planen](#5-Datenfluss-und-Speicherung-planen)
-  - [6) Service bzw Modul intern unterteilen](#6-Service-bzw-Modul-intern-unterteilen)
+  - [4) Services/Module verknüpfen und Datenfluss planen](#4-ServicesModule-verknüpfen-und-Datenfluss-planen)
+  - [5) Service bzw Modul intern unterteilen](#5-Service-bzw-Modul-intern-unterteilen)
 - Außerdem werden [Tipps für den Projektverlauf](#Projektverlauf-überwachen) gegeben
 
 ## 1) Fachliche Anforderungen sammeln und visualisieren
@@ -123,9 +122,9 @@
   - Datenhaltung
   - Technologie-Vielfalt
 
-## 4) Services/Module verknüpfen
+## 4) Services/Module verknüpfen und Datenfluss planen
 
-![Bild](images/project-architecture-guide-step-4-and-5.drawio.png)
+![Bild](images/project-architecture-guide-step-4.drawio.png)
 
 ### 4.1) Koordination
 - die Geschäftsprozesse sollen in der Technik abgebildet werden
@@ -230,9 +229,7 @@
   - zb OAuth2 Flow mit JWT (Spring Security Resource Server)
   - evtl. ein Gateway als zusätzlicher Schutz
 
-## 5) Datenfluss und Speicherung planen
-
-### 5.1) Verteilte Datenhaltung koordinieren
+### 4.3) Verteilte Datenhaltung koordinieren
 - jeder Service hat seine eigene logische Datenbank
   - evtl. physisch kombiniert, aber kein Zugriff vom anderen Service
   - also keine Kopplung über die Datenbank, damit Zuständigkeit klar ist
@@ -251,7 +248,7 @@
   - c) Kombination/Hybrid-Ansatz, je nach Art der Daten, bzw je nach Last im System
   - siehe auch [Link](https://www.youtube.com/watch?v=tvs-h8aCjCg)
 
-### 5.2) Interaktion mit der Datenbank
+### 4.4) Interaktion mit der Datenbank
 - wie wird gespeichert
   - a) den aktuellen Zustand speichern (CRUD), keine Historie
   - b) oder Event Sourcing
@@ -270,7 +267,7 @@
   - b) Saga Pattern: service-übergreifende Transaktion (ggf. Kompensationsoperation)
   - c) Transaction Outbox Pattern: garantierte Event-Zustellung über extra DB-Tabelle, siehe auch [Link](https://www.youtube.com/watch?v=tQw99alEVHo)
 
-### 5.2) Datenbank designen
+### 4.5) Datenbank designen
 - Datenbank Technologie  
   - a) SQL: strukturierte Daten, komplexe Abfragen
     - Postgres, MySql, etc
@@ -287,9 +284,9 @@
   - siehe auch DDD Tactical Design (Entity, Value Object, Aggregate)
   - und [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA) bzw [Link](https://www.youtube.com/watch?v=BFXuFb40P8k)
 
-## 6) Service bzw Modul intern unterteilen
+## 5) Service bzw Modul intern unterteilen
 
-![Bild](images/project-architecture-guide-step-6.drawio.png)
+![Bild](images/project-architecture-guide-step-5.drawio.png)
 
 - obere Ebene fachlich, danach technisch (Package by Feature, siehe auch [Link](https://www.youtube.com/watch?v=B1d95I7-zsw))
 - ein Service (bzw jedes Modul davon) wird in Schichten/Ringe aufgeteilt
