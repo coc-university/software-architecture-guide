@@ -359,8 +359,17 @@
 ### 2) Architektur entwickelt sich weiter
 - ein perfekter Entwurf zum Projektstart ist unrealistisch
 - die Architektur muss stetig verfeinert und angepasst werden
-- dabei sollten die Qualitätsmerkmale den Rahmen vorgeben, siehe auch [Link](https://www.heise.de/blog/Woran-erkennt-man-eine-gute-Softwarearchitektur-7541527.html)
-- Gravierende Änderungen/Entscheidungen als ADR festhalten, siehe auch [Link](https://www.heise.de/hintergrund/Gut-dokumentiert-Architecture-Decision-Records-4664988.html)
+- dabei sollten die Qualitätsmerkmale im Vordergrund stehen, siehe auch [Link](https://www.heise.de/blog/Woran-erkennt-man-eine-gute-Softwarearchitektur-7541527.html)
+- falls manche Qualitäten nicht ausreichend erfüllt sind, dann Maßnahmen einleiten, zb:
+  - Verbesserung der Wartbarkeit (zb über Modularisierung oder losere Kopplung)
+  - Bessere Performance (zb über Microservices, asynchrone Verarbeitung oder Caching)
+  - Mehr Zuverlässigkeit (zb über DB-Redundanzen oder Retry-Mechanismen)
+- gravierende Änderungen/Entscheidungen als ADR festhalten, siehe auch [Link](https://www.heise.de/hintergrund/Gut-dokumentiert-Architecture-Decision-Records-4664988.html)
+- grundlegender Aufbau eines Architecture Decision Records:
+  - Status festlegen (zb vorgeschlagen, beschlossen oder veraltet)
+  - Kontext beschreiben (Hintergrundinformationen und Rahmenbedingungen)
+  - Mögliche Optionen vergleichen und eine Entscheidung treffen
+  - Begründung der gewählten Lösung und welche Auswirkungen sich daraus ergeben
 
 ### 3) Mit technische Schulden umgehen
 - diese lassen sich nie komplett vermeiden
