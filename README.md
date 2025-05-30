@@ -164,18 +164,17 @@
   - c) Events: 
     - Benachrichtigungen austauschen über Ereignisse, die schon passiert sind
     - in der Vergangenheit formuliert (zb RejectedPayment)
-    - Events können über Message-Queues verteilt werden
+    - Events können über Message-Queues verteilt werden an mehrere Services
     - kann CQRS sinnvoll ergänzen
     - kann mit Event Sourcing kombiniert werden (DB Zustand darüber abbilden)
     - siehe auch [Link](https://www.youtube.com/watch?v=vS7sCJ1uezY)
 - API Technologie
   - synchron (Request/Response)
-    - a) Plain Http + CQRS
+    - a) Plain Http
       - Grundbausteine von Http: Url-Pfade, Http-Verben, Status-Codes, etc
-      - genügt als Basis für CQRS (fachliche API)
     - b) REST: 
       - für einfache Service-to-Service Kommunikation
-      - Basiert stark auf den Grundprinzipien von Http
+      - Basiert stark auf Plain Http und erweitert es
       - nutzt technische CRUD Operationen
       - Zugriff auf Ressourcen über Url-Pfade (zb /books)
       - nutzt alle Http-Verben und Status-Codes
@@ -195,8 +194,19 @@
       - Backend-Last abhängig von Frontend, potenzielles Risiko
     - siehe auch [Link](https://www.youtube.com/watch?v=NsdnGAAJfDk)
   - asynchron
-    - Event-System: RabbitMQ, Kafka, etc.
+    - Messaging-System: RabbitMQ, Kafka, etc.
     - Sonstiges: zb Webhooks, WebSockets, Server-Sent Events, etc
+- Zusammenspiel aus Konzept und Technologie
+  - a) CQRS/Events + Plain Http
+    - Commands und Queries synchron via Request/Response übertragen
+    - ebenso für Events möglich
+  - b) CQRS/Events + Messaging
+    - Commands und Events asynchron via Message (-Broker) übertragen
+    - eine Message kann an mehrere Services zugestellt werden
+    - Queries müssen Antworten liefern, Messaging eher ungeeignet
+  - c) CRUD + REST
+    - synchrone technische Aufrufe via Request/Response
+  - d) CRUD + Messaging → eher ungeeignet
 - API Trigger
   - a) ein einzelner Request, manuell ausgelöst
   - b) Batch-Verarbeitung (viele Requests)
@@ -377,6 +387,7 @@
   - sichtbar machen über Dokumentation, zb TDR, siehe auch [Link](https://www.heise.de/blog/Technical-Debt-Records-Dokumentation-technischer-Schulden-9876115.html)
   - kommunizieren bei der Projektplanung
   - Auswirkungen/Kosten aufzeigen
+  - nach und nach minimieren durch zb Refactorings
 
 ### 4) Dokumentation der Architektur
 - die Doku sollte eher schlank gehalten sein 
