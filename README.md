@@ -1,4 +1,4 @@
-# project-architecture-guide
+# software-architecture-guide
 
 ## Intro
 
