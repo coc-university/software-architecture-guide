@@ -75,7 +75,7 @@
     - ein Domänen-Objekt soll nicht global einheitlich für alle Bereiche gelten
     - stattdessen hat jeder Kontext sein eigenes individuelles Modell
     - Beispiel "Bestellung": Unterschied zwischen Vertrieb und Logistik, aber gleicher Name
-  - Verantwortung
+  - Verantwortung über Daten
     - wie sieht die Verantwortlichkeit der Daten im Gesamtprozess aus
     - welcher Kontext besitzt welche Daten, wo gibt es Abhängigkeiten
     - wichtig für die spätere Verknüpfung der Kontexte
@@ -113,18 +113,20 @@
   - a) ein Service mit mehreren fachlichen Modulen (modular Monolith = Modulith)
     - über Java Packages oder via Maven-Module
     - bietet zum Projektstart ein einfaches Setup und geringe Kosten
-  - b) mehrere separate Microservice, also eigenständig laufende Prozesse
-    - initial evtl zu komplex für einfache Context-Map mit kleinem Team
-    - kann im späteren Projektverlauf Vorteile bringen
-    - Deployment-Automatisierung über Pipeline sinnvoll
+  - b) mehrere separate Microservice
+    - eigenständig laufende Prozesse, optional auch eigene Git-Repo's
+    - initial evtl zu komplex, aber kann im späteren Projektverlauf Vorteile bringen
   - siehe auch [Link](https://www.youtube.com/watch?v=6-Wu178sOEE)
-- Einfluss-Faktoren für die Entscheidung:
-  - fachliche Komplexität
-  - Größe des Entwickler-Teams
-  - Entwicklungsgeschwindigkeit (wie oft gibt es Releases/Deployments)
-  - Betrieb (Skalierung, Sicherheit, Resilienz, Wartung, Kosten)
-  - Datenhaltung
-  - Technologie-Vielfalt
+
+| Einflussfaktoren für die Entscheidung                     | Modulith  | Microservices |
+|-----------------------------------------------------------|-----------|---------------|
+| fachliche Komplexität, also funktionale Anforderungen     | klein     | groß          |
+| Qualitätsmerkmale (zb Skalierung, Resilienz, Kosten)      | limitiert | flexibler     |
+| Größe des Entwickler-Teams                                | klein     | groß          |
+| Unterschiedliche Release-Zyklen der Kontexte              | nein      | ja            |
+| Deployment-Automatisierung (Pipelines) notwendig          | nein      | ja            |
+| Unabhängige Datenmodelle der Kontexte (einfach umsetzbar) | nein      | ja            |
+| Technologie-Vielfalt                                      | nein      | ja            |
 
 ## 4) Services/Module verknüpfen und Datenfluss planen
 
@@ -146,6 +148,16 @@
     - hohe Entkopplung und Flexibilität möglich, aber Fluss ist weniger transparent
     - Kompensation: hören auf Events von anderen Services (zb XxxFailed)
   - siehe auch [Link](https://www.informatik-aktuell.de/entwicklung/methoden/orchestrieren-oder-choreografieren-ueber-eine-streitfrage-in-microservices-architekturen.html)
+
+| Einflussfaktoren für die Entscheidung               | Orchestration | Choreografie |
+|-----------------------------------------------------|---------------|--------------|
+| komplexe Geschäftsprozesse liegen vor               | ja            | nein         |
+| viele Fehlerszenarien vorhanden, Monitoring wichtig | ja            | nein         |
+| strenge Konsistenzregeln notwendig                  | ja            | nein         |
+| Services werden von mehreren Teams verwaltet        | nein          | ja           |
+| leichtes Hinzufügen von neuen Services              | nein          | ja           |
+| skalieren, parallele Abläufen entscheidend          | nein          | ja           |
+
 
 ### 4.2) APIs entwerfen
 - API Konzept/Design
@@ -405,14 +417,25 @@
   - nach und nach minimieren durch zb Refactorings
 
 ### 4) Dokumentation der Architektur
-- die Doku sollte eher schlank gehalten sein 
-- so können Änderungen einfach erkannt und integriert werden
-- der Fokus sollte auf konstante/stabile Bereiche gelegt werden
-- Elemente die sich noch häufig ändern nur auf hoher Flugebene anreißen
-- Beispiele
-  - Arc42: https://arc42.de/overview/
-  - Canvas: https://canvas.arc42.org
-  - https://github.com/feststelltaste/software-component-canvas
+- Allgemein
+  - die Doku sollte eher schlank gehalten sein 
+  - so können Änderungen einfach erkannt und integriert werden
+  - der Fokus sollte auf konstante/stabile Bereiche gelegt werden
+  - Elemente die sich noch häufig ändern nur auf hoher Flugebene anreißen
+- Technische Architektur festhalten
+  - Bausteine visualisieren über zb arc42-Bausteinsicht mit C4-Modell zur Unterteilung
+  - Sequenzdiagramme mit zb UML in arc42-Laufzeitsicht zeigen dynamisches Verhalten
+  - arc42: https://arc42.de/overview/
+  - C4 (Context, Container, Component, Code): https://c4model.com
+- Canvas
+  - kompakte, übersichtliche Darstellung auf einer Seite in einer Tabelle
+  - Leinwand (Canvas) mit vorgegebenen Feldern
+  - enthält nur die wichtigsten Aspekte eines Systems
+  - leichtgewichtiges Hilfsmittel für frühe Projektphasen oder Reviews
+  - kein Ersatz zu arc42, sondern eine Ergänzung 
+  - Beispiele:
+    - https://canvas.arc42.org
+    - https://github.com/feststelltaste/software-component-canvas
 
 ## Gesamter Ablauf des Architektur-Leitfadens
 ![Ablauf](images/project-architecture-guide.drawio.png)
