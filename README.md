@@ -15,7 +15,7 @@
   - [1) Fachliche Anforderungen sammeln und visualisieren](#1-Fachliche-Anforderungen-sammeln-und-visualisieren)
   - [2) Fachliche Kontext-Übersicht erstellen](#2-Fachliche-Kontext-Übersicht-erstellen)
   - [3) Technische Services und Module festlegen](#3-Technische-Services-und-Module-festlegen)
-  - [4) Services/Module verknüpfen und Datenfluss planen](#4-ServicesModule-verknüpfen-und-Datenfluss-planen)
+  - [4) Services/Module über APIs verknüpfen und Datenfluss planen](#4-ServicesModule-über-APIs-verknüpfen-und-Datenfluss-planen)
   - [5) Service bzw Modul intern unterteilen](#5-Service-bzw-Modul-intern-unterteilen)
 - Außerdem werden [Tipps für den Projektverlauf](#Projektverlauf-überwachen) gegeben
 
