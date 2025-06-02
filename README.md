@@ -2,7 +2,8 @@
 
 ## Intro
 
-- In dieser Übersicht wird ein Leitfaden für eine Software-Architektur aufgezeigt
+- Allgemein
+  - In diesem Dokument wird ein Architektur-Leitfaden aufgezeigt
   - Schritt-für-Schritt werden aufbauend einzelne Abschnitte beschrieben
   - beginnend bei der Fachlichkeit, gefolgt von der technischen Umsetzung
   - es soll dabei helfen den passenden Aufbau für ein Projekt zu finden
@@ -128,25 +129,32 @@
 | Unabhängige Datenmodelle der Kontexte (einfach umsetzbar) | nein      | ja            |
 | Technologie-Vielfalt                                      | nein      | ja            |
 
-## 4) Services/Module verknüpfen und Datenfluss planen
+## 4) Services/Module über APIs verknüpfen und Datenfluss planen
 
 ![Bild](images/project-architecture-guide-step-4.drawio.png)
 
-### 4.1) Koordination
+### 4.1) Verteilte Prozesse koordinieren
 - die Geschäftsprozesse sollen in der Technik abgebildet werden
 - falls dies über mehrere Services hinweg geschieht, ist eine Koordination notwendig
-- Saga Pattern: service-übergreifende Transaktion (ggf. Kompensationsoperation) via:
+- die Auswahl der Koordinationsart hat Einfluss auf das spätere API-Design
+- Saga Pattern: 
+  - übergreifende, verteilte Transaktion 
+  - mit letztendlicher Konsistenz (eventual consistency), kein ACID
+  - ist in eine Reihe kleinerer, lokaler Transaktionen aufgeteilt
+  - ggf. sind Kompensationsoperationen notwendig
+- umgesetzt durch:
   - a) Orchestration 
     - ein zentraler Punkt steuert aktiv die einzelnen Services
     - klare Kontrolle über den Prozessfluss, aber zentrale Abhängigkeit/Kopplung
     - Kompensation: Orchestrator kennt die Reihenfolge und führt Gegenaktionen aus
-    - zb Workflow-Engines
+    - APIs müssen explizite Kommandos bereitstellen (zb /cancel-order)
+    - zb Workflow-Engines wie Camunda
   - b) Choreografie 
     - verteilte Steuerung in den Services
       - a) über Events und einen Message-Broker
       - b) direkte Http-Aufrufe (keine Entkopplung, eher verteilte Orchestrierung)
     - hohe Entkopplung und Flexibilität möglich, aber Fluss ist weniger transparent
-    - Kompensation: hören auf Events von anderen Services (zb XxxFailed)
+    - Kompensation: hören auf Events von anderen Services (zb OrderCreationFailed)
   - siehe auch [Link](https://www.informatik-aktuell.de/entwicklung/methoden/orchestrieren-oder-choreografieren-ueber-eine-streitfrage-in-microservices-architekturen.html)
 
 | Einflussfaktoren für die Entscheidung               | Orchestration | Choreografie |
@@ -158,17 +166,71 @@
 | leichtes Hinzufügen von neuen Services              | nein          | ja           |
 | skalieren, parallele Abläufen entscheidend          | nein          | ja           |
 
+### 4.2) Verteilte Datenhaltung steuern
+- jeder Service hat seine eigene logische Datenbank
+  - evtl. physisch kombiniert, aber kein Zugriff vom anderen Service
+  - also keine Kopplung über die Datenbank, damit Zuständigkeit klar ist
+- Datenabruf via:
+  - a) Pull-Modell:
+    - Daten eines anderen Kontextes werden bei Bedarf vom Owner-Service abgefragt
+    - ist einfacher und braucht weniger Speicherplatz
+    - dauert aber länger und ist fehleranfällig
+  - b) Push-Modell:
+    - Daten eines anderen Kontextes werden im eigenen Service zusätzlich gespeichert/dupliziert
+    - hier reicht unter Umständen eine Teilmenge, also nur so viel wie nötig
+    - Aktualisierung der Daten per Event vom Owner-Service notwendig
+    - ist komplizierter und braucht mehr Speicher
+    - dafür viel schneller und man ist unabhängiger während der Verarbeitung
+    - ist bei DDD üblich, denn Entitäten können in mehreren Bounded Contexts vorhanden sein
+  - c) Kombination/Hybrid-Ansatz, je nach Art der Daten, bzw je nach Last im System
+  - siehe auch [Link](https://www.youtube.com/watch?v=tvs-h8aCjCg)
 
-### 4.2) APIs entwerfen
+### 4.3) Interaktion mit der Datenbank
+- wie wird gespeichert
+  - a) den aktuellen Zustand speichern (CRUD), keine Historie
+  - b) oder Event Sourcing
+    - Events speichern (nur hinten anfügen, nichts löschen)
+    - Zustand per Replay ermitteln (alle Events „aufsummieren“)
+    - bzw Zwischenstände (Snapshots) festhalten für bessere Performance
+    - siehe auch [Link](https://www.youtube.com/watch?v=yFjzGRb8NOk) bzw [Link](https://www.youtube.com/watch?v=ss9wnixCGRY)
+- bei Bedarf CQRS
+  - schreibende und lesende Aktionen trennen, also zwei separate Datenbanken
+  - Query-Seite ist optimiert für schnelles Lesen, evtl. denormalisiertes Modell
+  - Synchronisation/Aktualisierung notwendig per Event
+- Transaktionen
+  - Ausführung zusammenhängender Geschäftsprozesse (alles oder nichts)
+  - das System bleibt in einem gültigen Zustand
+  - a) lokale Transaktionen innerhalb einer Klasse (zb @Transactional) 
+  - b) Saga Pattern: service-übergreifende Transaktion (ggf. Kompensationsoperation)
+  - c) Transaction Outbox Pattern: garantierte Event-Zustellung über extra DB-Tabelle, siehe auch [Link](https://www.youtube.com/watch?v=tQw99alEVHo)
+
+### 4.4) Datenbank designen
+- Datenbank Technologie  
+  - a) SQL: strukturierte Daten, komplexe Abfragen
+    - Postgres, MySql, etc
+    - Spring Data JPA / Hibernate: komplex, mit Cache/Persistence-Context und Dirty Checking 
+    - oder Data JDBC: einfacher, ohne Caching, führt SQL sofort aus, orientiert an DDD Aggregates
+    - siehe auch [Link](https://www.youtube.com/watch?v=AnIouYdwxo0)
+  - b) NoSQL: unstrukturierte Daten, einfache Abfragen, gute Skalierung
+    - zb MongoDb via Spring Data MongoDB
+    - speichern von Objekten ohne extra Entity-Klasse & Repository möglich
+- Datenbank Tabellen Design
+  - Tabellen normalisieren, um Redundanzen zu minimieren
+  - große verschachtelte Graphen vermeiden, Konsistenzgrenzen einführen
+  - wenn nötig mit IDs arbeiten statt direkt zu referenzieren
+  - siehe auch DDD Tactical Design (Entity, Value Object, Aggregate)
+  - und [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA) bzw [Link](https://www.youtube.com/watch?v=BFXuFb40P8k)
+
+### 4.5) APIs entwerfen
 - API Konzept/Design
   - generell sollten Schnittstellen fachlich modelliert werden, siehe auch [Link](https://www.youtube.com/watch?v=K2eiHDtoo-A)
-  - a) CQRS: 
-    - Commands: 
+  - a) CQRS:
+    - Commands:
       - Aufträge, imperativ, POST, Seiteneffekt, evtl. nicht idempotent
       - kein PUT und DELETE wie bei REST, die Fachlichkeit entscheidet den Effekt
       - kann via Request oder Message versendet werden
       - Beispiel: /command/register-book
-    - Queries 
+    - Queries
       - Abfragen, GET, idempotent
       - Query-Namen nutzen statt Entität
       - Beispiel: /query/top-selling-books
@@ -187,7 +249,7 @@
     - für simplen Service mit wenig Fachlogik geeignet
     - bei größeren Systemen ein Anti-Pattern
     - siehe auch [Link](https://www.youtube.com/watch?v=E9yx9w3GJk0)
-  - c) Events: 
+  - c) Events:
     - Benachrichtigungen austauschen über Ereignisse, die schon passiert sind
     - in der Vergangenheit formuliert (zb RejectedPayment)
     - Events können über Message-Queues verteilt werden an mehrere Services
@@ -198,23 +260,23 @@
   - synchron (Request/Response)
     - a) Plain Http
       - Grundbausteine von Http: Url-Pfade, Http-Verben, Status-Codes, etc
-    - b) REST: 
+    - b) REST:
       - für einfache Service-to-Service Kommunikation
       - Basiert stark auf Plain Http und erweitert es
       - nutzt technische CRUD Operationen
       - Zugriff auf Ressourcen über Url-Pfade (zb /books)
       - nutzt alle Http-Verben und Status-Codes
       - Paging, Sortierung, Filterung möglich
-      - in der Praxis meist keine HATEOAS Links im Einsatz 
+      - in der Praxis meist keine HATEOAS Links im Einsatz
       - möglich Erweiterung: Reactive Stream (Spring Webflux, non-blocking)
-    - c) gRPC: 
+    - c) gRPC:
       - für sehr schnelle Service-to-Service Kommunikation
       - direkte Methodenaufrufe im anderen Service, keine Ressourcen
-      - nutzt das binäre Format Protobuf (statt Http/Json) 
+      - nutzt das binäre Format Protobuf (statt Http/Json)
       - daher nicht direkt lesbar, schwerer zu debuggen
-    - d) GraphQL: 
+    - d) GraphQL:
       - zwischen Frontend und Backend
-      - nur ein Endpunkt (/graphql), nur POST-Requests, immer Status-Code 200 
+      - nur ein Endpunkt (/graphql), nur POST-Requests, immer Status-Code 200
       - kein Over/Under-Fetching, selektieren von Properties
       - Caching ist schwieriger umsetzbar
       - Backend-Last abhängig von Frontend, potenzielles Risiko
@@ -239,64 +301,9 @@
   - c) Scheduling (zeitgesteuerte Requests)
   - d) event-getrieben (kein klassischer Request)
   - e) Streaming (kontinuierliche Verarbeitung eines Datenstroms)
-- API Security 
+- API Security
   - zb OAuth2 Flow mit JWT (Spring Security Resource Server)
   - evtl. ein Gateway als zusätzlicher Schutz
-
-### 4.3) Verteilte Datenhaltung koordinieren
-- jeder Service hat seine eigene logische Datenbank
-  - evtl. physisch kombiniert, aber kein Zugriff vom anderen Service
-  - also keine Kopplung über die Datenbank, damit Zuständigkeit klar ist
-- Datenaustausch
-  - a) Pull-Modell:
-    - Daten eines anderen Kontextes werden bei Bedarf vom Owner-Service abgefragt
-    - ist einfacher und braucht weniger Speicherplatz
-    - dauert aber länger und ist fehleranfällig
-  - b) Push-Modell:
-    - Daten eines anderen Kontextes werden im eigenen Service zusätzlich gespeichert/dupliziert
-    - hier reicht unter Umständen eine Teilmenge, also nur so viel wie nötig
-    - Aktualisierung der Daten per Event vom Owner-Service notwendig
-    - ist komplizierter und braucht mehr Speicher
-    - dafür viel schneller und man ist unabhängiger während der Verarbeitung
-    - ist bei DDD üblich, denn Entitäten können in mehreren Bounded Contexts vorhanden sein
-  - c) Kombination/Hybrid-Ansatz, je nach Art der Daten, bzw je nach Last im System
-  - siehe auch [Link](https://www.youtube.com/watch?v=tvs-h8aCjCg)
-
-### 4.4) Interaktion mit der Datenbank
-- wie wird gespeichert
-  - a) den aktuellen Zustand speichern (CRUD), keine Historie
-  - b) oder Event Sourcing
-    - Events speichern (nur hinten anfügen, nichts löschen)
-    - Zustand per Replay ermitteln (alle Events „aufsummieren“)
-    - bzw Zwischenstände (Snapshots) festhalten für bessere Performance
-    - siehe auch [Link](https://www.youtube.com/watch?v=yFjzGRb8NOk) bzw [Link](https://www.youtube.com/watch?v=ss9wnixCGRY)
-- bei Bedarf CQRS
-  - schreibende und lesende Aktionen trennen, also zwei separate Datenbanken
-  - Query-Seite ist optimiert für schnelles Lesen, evtl. denormalisiertes Modell
-  - Synchronisation/Aktualisierung notwendig per Event
-- Transaktionen
-  - Ausführung zusammenhängender Geschäftsprozesse (alles oder nichts)
-  - das System bleibt in einem gültigen Zustand
-  - a) lokale Transaktionen innerhalb einer Klasse (zb @Transactional) 
-  - b) Saga Pattern: service-übergreifende Transaktion (ggf. Kompensationsoperation)
-  - c) Transaction Outbox Pattern: garantierte Event-Zustellung über extra DB-Tabelle, siehe auch [Link](https://www.youtube.com/watch?v=tQw99alEVHo)
-
-### 4.5) Datenbank designen
-- Datenbank Technologie  
-  - a) SQL: strukturierte Daten, komplexe Abfragen
-    - Postgres, MySql, etc
-    - Spring Data JPA / Hibernate: komplex, mit Cache/Persistence-Context und Dirty Checking 
-    - oder Data JDBC: einfacher, ohne Caching, führt SQL sofort aus, orientiert an DDD Aggregates
-    - siehe auch [Link](https://www.youtube.com/watch?v=AnIouYdwxo0)
-  - b) NoSQL: unstrukturierte Daten, einfache Abfragen, gute Skalierung
-    - zb MongoDb via Spring Data MongoDB
-    - speichern von Objekten ohne extra Entity-Klasse & Repository möglich
-- Datenbank Tabellen Design
-  - Tabellen normalisieren, um Redundanzen zu minimieren
-  - große verschachtelte Graphen vermeiden, Konsistenzgrenzen einführen
-  - wenn nötig mit IDs arbeiten statt direkt zu referenzieren
-  - siehe auch DDD Tactical Design (Entity, Value Object, Aggregate)
-  - und [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA) bzw [Link](https://www.youtube.com/watch?v=BFXuFb40P8k)
 
 ## 5) Service bzw Modul intern unterteilen
 
