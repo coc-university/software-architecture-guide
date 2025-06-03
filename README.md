@@ -77,8 +77,7 @@
     - stattdessen hat jeder Kontext sein eigenes individuelles Modell
     - Beispiel "Bestellung": Unterschied zwischen Vertrieb und Logistik, aber gleicher Name
   - Verantwortung über Daten
-    - wie sieht die Verantwortlichkeit der Daten im Gesamtprozess aus
-    - welcher Kontext besitzt welche Daten, wo gibt es Abhängigkeiten
+    - wer ist der Besitzer der Entitäten im Gesamtprozess, wo gibt es Abhängigkeiten
     - wichtig für die spätere Verknüpfung der Kontexte
 - Kontexte in Kategorien einteilen
   - Core: Kern der Anwendung, zentrale Business-Prozesse (früher umsetzen, evtl. höher skalieren)
@@ -110,20 +109,26 @@
 
 - aus den fachlichen Kontexten sollen technische Bausteine entstehen
 - jeder Kontext kann ein eigenständiger Service sein, oder nur ein Modul im Service
+- Abwägung (Trade-off) zwischen Unabhängigkeit und Komplexität
 - Aufteilung
   - a) ein Service mit mehreren fachlichen Modulen (modular Monolith = Modulith)
     - über Java Packages oder via Maven-Module
     - bietet zum Projektstart ein einfaches Setup und geringe Kosten
-  - b) mehrere separate Microservice
+  - b) mehrere separate Microservices
     - eigenständig laufende Prozesse, optional auch eigene Git-Repo's
     - initial evtl zu komplex, aber kann im späteren Projektverlauf Vorteile bringen
   - siehe auch [Link](https://www.youtube.com/watch?v=6-Wu178sOEE)
 
 | Einflussfaktoren für die Entscheidung                     | Modulith  | Microservices |
 |-----------------------------------------------------------|-----------|---------------|
-| fachliche Komplexität, also funktionale Anforderungen     | klein     | groß          |
+| **Allgemein:**                                            |           |               |
+| Unabhängigkeit in der Entwicklung                         | klein     | groß          |
+| Technische Komplexität des Gesamtsystems                  | klein     | groß          |
+| **Anforderungen:**                                        |           |               |
+| Funktionale Anforderungen                                 | klein     | groß          |
 | Qualitätsmerkmale (zb Skalierung, Resilienz, Kosten)      | limitiert | flexibler     |
-| Größe des Entwickler-Teams                                | klein     | groß          |
+| **Sonstiges:**                                            |           |               |
+| Größe (und Wissen) des Entwickler-Teams                   | klein     | groß          |
 | Unterschiedliche Release-Zyklen der Kontexte              | nein      | ja            |
 | Deployment-Automatisierung (Pipelines) notwendig          | nein      | ja            |
 | Unabhängige Datenmodelle der Kontexte (einfach umsetzbar) | nein      | ja            |
@@ -179,7 +184,7 @@
     - Daten eines anderen Kontextes werden im eigenen Service zusätzlich gespeichert/dupliziert
     - hier reicht unter Umständen eine Teilmenge, also nur so viel wie nötig
     - Aktualisierung der Daten per Event vom Owner-Service notwendig
-    - ist komplizierter und braucht mehr Speicher
+    - ist komplizierter, verbraucht mehr Speicher und Daten sind evtl. noch nicht konsistent
     - dafür viel schneller und man ist unabhängiger während der Verarbeitung
     - ist bei DDD üblich, denn Entitäten können in mehreren Bounded Contexts vorhanden sein
   - c) Kombination/Hybrid-Ansatz, je nach Art der Daten, bzw je nach Last im System
@@ -267,7 +272,8 @@
       - Zugriff auf Ressourcen über Url-Pfade (zb /books)
       - nutzt alle Http-Verben und Status-Codes
       - Paging, Sortierung, Filterung möglich
-      - in der Praxis meist keine HATEOAS Links im Einsatz
+      - es gibt 4 Level die beschreiben wie "RESTful" eine API tatsächlich ist
+      - in der Praxis meist keine HATEOAS Links im Einsatz (höchstes Level)
       - möglich Erweiterung: Reactive Stream (Spring Webflux, non-blocking)
     - c) gRPC:
       - für sehr schnelle Service-to-Service Kommunikation
@@ -312,7 +318,7 @@
 - obere Ebene fachlich, danach technisch (Package by Feature, siehe auch [Link](https://www.youtube.com/watch?v=B1d95I7-zsw))
 - ein Service (bzw jedes Modul davon) wird in Schichten/Ringe aufgeteilt
 - jede Ebene sollte lose gekoppelt sein zur anderen (Interfaces)
-- Die Beziehungen zwischen den Ebenen bzw Modulen kann zb Spring Modulith prüfen (ArcUnit)
+- Die Beziehungen zwischen den Ebenen bzw Modulen kann zb Spring Modulith (ArcUnit) prüfen
 - Klassen in Java Packages möglichst unsichtbar halten für die Außenwelt (package private)
 - Varianten
   - a) Ports/Adapter, Hexagonal, Onion, Clean-Arc
@@ -341,11 +347,10 @@
     - kann irgendwann komplex werden (Service 1 -> Service 2 -> Service 3)
   - b) Domain Model / Object Oriented Design
     - Logik und Daten/State gemeinsam in einer Klasse (Rich Domain Model)
-    - evtl. 2 Entities verwenden, ein technisches und ein fachliches Object (Mapping)
+    - evtl. 2 Entities verwenden, ein technisches und ein fachliches Object (Mapping, [Link](https://youtu.be/VGhg6Tfxb60?t=1550))
     - keine Setter nutzen, sondern stattdessen fachliche Methoden
     - Services sind sehr klein und delegieren nur weiter an die Domain Objekte
     - besser erweiterbar/verständlich in einer komplexen Umgebung
-    - siehe auch [Link](https://youtu.be/VGhg6Tfxb60?t=1550)
 
 ## Projektverlauf überwachen
 
@@ -380,6 +385,10 @@
 ### 2) Architektur entwickelt sich weiter
 - ein perfekter Entwurf zum Projektstart ist unrealistisch
 - die Architektur muss stetig verfeinert und angepasst werden
+- Architekturziele messbar und automatisiert überprüfbar machen (Architecture Fitness Functions), zb:
+  - Struktur: Einhaltung von Layern und Modulgrenzen via Spring Modulith (ArcUnit)
+  - Qualität: Code und Abhängigkeiten (Beispiele: SonarQube, Mend, Fortify)
+  - Verhalten: Antwortzeit, Durchsatz, Fehlertoleranz via Lasttest-Tool
 - dabei sollten die Qualitätsmerkmale im Vordergrund stehen, siehe auch [Link](https://www.heise.de/blog/Woran-erkennt-man-eine-gute-Softwarearchitektur-7541527.html)
 - falls manche Qualitäten nicht ausreichend erfüllt sind, dann Maßnahmen einleiten, zb:
   - Verbesserung der Wartbarkeit (zb über Modularisierung oder losere Kopplung)
