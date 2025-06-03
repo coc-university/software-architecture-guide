@@ -13,9 +13,9 @@
   - bei den Technologien wird Java & Spring Boot beispielhaft referenziert
 - Abschnitte
   - [1) Fachliche Anforderungen sammeln und visualisieren](#1-Fachliche-Anforderungen-sammeln-und-visualisieren)
-  - [2) Fachliche Kontext-Übersicht erstellen](#2-Fachliche-Kontext-Übersicht-erstellen)
+  - [2) Kontext-Übersicht erstellen](#2-Kontext-Übersicht-erstellen)
   - [3) Technische Services und Module festlegen](#3-Technische-Services-und-Module-festlegen)
-  - [4) Services/Module über APIs verknüpfen und Datenfluss planen](#4-ServicesModule-über-APIs-verknüpfen-und-Datenfluss-planen)
+  - [4) Prozesse abbilden und Datenfluss planen](#4-Prozesse-abbilden-und-Datenfluss-planen)
   - [5) Service bzw Modul intern unterteilen](#5-Service-bzw-Modul-intern-unterteilen)
 - Außerdem werden [Tipps für den Projektverlauf](#Projektverlauf-überwachen) gegeben
 
@@ -44,7 +44,7 @@
   - Akteure/Objekte bilden Knoten im Diagramm (später Service oder Entity im Code)
   - Aktivitäten sind Verknüpfungen/Kanten über beschriftete Pfeile (später API oder Methode)
 
-## 2) Fachliche Kontext-Übersicht erstellen
+## 2) Kontext-Übersicht erstellen
 
 ![Bild](images/project-architecture-guide-step-2.drawio.png)
 
@@ -134,7 +134,7 @@
 | Unabhängige Datenmodelle der Kontexte (einfach umsetzbar) | nein      | ja            |
 | Technologie-Vielfalt                                      | nein      | ja            |
 
-## 4) Services/Module über APIs verknüpfen und Datenfluss planen
+## 4) Prozesse abbilden und Datenfluss planen
 
 ![Bild](images/project-architecture-guide-step-4.drawio.png)
 
@@ -171,87 +171,7 @@
 | leichtes Hinzufügen von neuen Services              | nein          | ja           |
 | skalieren, parallele Abläufen entscheidend          | nein          | ja           |
 
-### 4.2) Verteilte Datenhaltung steuern
-- jeder Service hat seine eigene logische Datenbank
-  - evtl. physisch kombiniert, aber kein Zugriff vom anderen Service
-  - also keine Kopplung über die Datenbank, damit Zuständigkeit klar ist
-- Datenabruf via:
-  - a) Pull-Modell:
-    - Daten eines anderen Kontextes werden bei Bedarf vom Owner-Service abgefragt
-    - ist einfacher und braucht weniger Speicherplatz
-    - dauert aber länger und ist fehleranfällig
-  - b) Push-Modell:
-    - Daten eines anderen Kontextes werden im eigenen Service zusätzlich gespeichert/dupliziert
-    - hier reicht unter Umständen eine Teilmenge, also nur so viel wie nötig
-    - Aktualisierung der Daten per Event vom Owner-Service notwendig
-    - ist komplizierter, verbraucht mehr Speicher und Daten sind evtl. noch nicht konsistent
-    - dafür viel schneller und man ist unabhängiger während der Verarbeitung
-    - ist bei DDD üblich, denn Entitäten können in mehreren Bounded Contexts vorhanden sein
-  - c) Kombination/Hybrid-Ansatz, je nach Art der Daten, bzw je nach Last im System
-  - siehe auch [Link](https://www.youtube.com/watch?v=tvs-h8aCjCg)
-
-### 4.3) Interaktion mit der Datenbank
-- wie wird gespeichert
-  - a) den aktuellen Zustand speichern (CRUD), keine Historie
-  - b) oder Event Sourcing
-    - Events speichern (nur hinten anfügen, nichts löschen)
-    - Zustand per Replay ermitteln (alle Events „aufsummieren“)
-    - bzw Zwischenstände (Snapshots) festhalten für bessere Performance
-    - siehe auch [Link](https://www.youtube.com/watch?v=yFjzGRb8NOk) bzw [Link](https://www.youtube.com/watch?v=ss9wnixCGRY)
-- bei Bedarf CQRS
-  - schreibende und lesende Aktionen trennen, also zwei separate Datenbanken
-  - Query-Seite ist optimiert für schnelles Lesen, evtl. denormalisiertes Modell
-  - Synchronisation/Aktualisierung notwendig per Event
-- Transaktionen
-  - Ausführung zusammenhängender Geschäftsprozesse (alles oder nichts)
-  - das System bleibt in einem gültigen Zustand
-  - a) lokale Transaktionen innerhalb einer Klasse (zb @Transactional) 
-  - b) Saga Pattern: service-übergreifende Transaktion (ggf. Kompensationsoperation)
-  - c) Transaction Outbox Pattern: garantierte Event-Zustellung über extra DB-Tabelle, siehe auch [Link](https://www.youtube.com/watch?v=tQw99alEVHo)
-
-### 4.4) Datenbank designen
-- Datenbank Technologie  
-  - a) SQL: strukturierte Daten, komplexe Abfragen
-    - Postgres, MySql, etc
-    - Spring Data JPA / Hibernate: komplex, mit Cache/Persistence-Context und Dirty Checking 
-    - oder Data JDBC: einfacher, ohne Caching, führt SQL sofort aus, orientiert an DDD Aggregates
-    - siehe auch [Link](https://www.youtube.com/watch?v=AnIouYdwxo0)
-  - b) NoSQL: unstrukturierte Daten, einfache Abfragen, gute Skalierung
-    - zb MongoDb via Spring Data MongoDB
-    - speichern von Objekten ohne extra Entity-Klasse & Repository möglich
-- Datenbank Tabellen Design
-  - Tabellen normalisieren, um Redundanzen zu minimieren
-  - große verschachtelte Graphen vermeiden, Konsistenzgrenzen einführen
-  - wenn nötig mit IDs (Fremdschlüssel) arbeiten statt direkt zu referenzieren
-
-### 4.5) Daten modellieren
-- es wird ein Modell der Wirklichkeit in der Software benötigt
-- bedeutet alle Objekte/Knoten aus den UseCases müssen abgebildet werden
-- zb Komponenten aus DDD Tactical Design nutzen, siehe auch [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA)
-  - Entity
-    - hat eine stabile Identität, auch wenn sich Eigenschaften ändern
-    - zb "Bestellung"
-  - Value Object
-    - ohne eigene Identität, also zählt nur durch seine Werte
-    - ist unveränderlich (immutable), muss komplett ersetzt werden durch neue Instanz
-    - ermöglicht Wiederverwendung und Verhinderung von Nebeneffekten
-    - zb "Adresse" oder "Geldbetrag"
-  - Aggregate
-    - eine Gruppe zusammengehöriger Objekte, die konsistent als Ganzes verwaltet werden
-    - also Entities + Value Objects, zb "Bestellung" + "Adresse" + "Geldbetrag"
-    - eine Entity fungiert als Aggregate Root
-    - der Zugriff auf Elemente des Aggregates erfolgt ausschließlich via Root-Entity
-    - bedeutet es kann nicht direkt ein Sub-Element von außen geändert werden
-    - im Beispiel ist das Ersetzen der "Adresse" ohne die "Bestellung" nicht möglich
-- falls man das Daten-Modell direkt mit Technologien (Spring-JPA) mischt:
-  - Entity: klassische @Entity mit @Id und Properties
-  - Value Object: 
-    - private + final Properties und keine Setter-Methoden
-    - optional: kann direkt in die Entity-Tabelle eingebettet werden (keine extra Tabelle)
-    - @Embeddable Klasse via @Embedded in @Entity nutzen
-  - Aggregate: Zugriff via @Repository-Interface (extends JpaRepository<Bestellung, Long>)
-
-### 4.5) APIs entwerfen
+### 4.2) Prozesse über APIs verbinden
 - API Konzept/Design
   - generell sollten Schnittstellen fachlich modelliert werden, siehe auch [Link](https://www.youtube.com/watch?v=K2eiHDtoo-A)
   - a) CQRS:
@@ -335,6 +255,86 @@
 - API Security
   - zb OAuth2 Flow mit JWT (Spring Security Resource Server)
   - evtl. ein Gateway als zusätzlicher Schutz
+
+### 4.3) Verteilte Datenhaltung steuern
+- jeder Service hat seine eigene logische Datenbank
+  - evtl. physisch kombiniert, aber kein Zugriff vom anderen Service
+  - also keine Kopplung über die Datenbank, damit Zuständigkeit klar ist
+- Datenabruf via:
+  - a) Pull-Modell:
+    - Daten eines anderen Kontextes werden bei Bedarf vom Owner-Service abgefragt
+    - ist einfacher und braucht weniger Speicherplatz
+    - dauert aber länger und ist fehleranfällig
+  - b) Push-Modell:
+    - Daten eines anderen Kontextes werden im eigenen Service zusätzlich gespeichert/dupliziert
+    - hier reicht unter Umständen eine Teilmenge, also nur so viel wie nötig
+    - Aktualisierung der Daten per Event vom Owner-Service notwendig
+    - ist komplizierter, verbraucht mehr Speicher und Daten sind evtl. noch nicht konsistent
+    - dafür viel schneller und man ist unabhängiger während der Verarbeitung
+    - ist bei DDD üblich, denn Entitäten können in mehreren Bounded Contexts vorhanden sein
+  - c) Kombination/Hybrid-Ansatz, je nach Art der Daten, bzw je nach Last im System
+  - siehe auch [Link](https://www.youtube.com/watch?v=tvs-h8aCjCg)
+
+### 4.4) Interaktion mit der Datenbank
+- wie wird gespeichert
+  - a) den aktuellen Zustand speichern (CRUD), keine Historie
+  - b) oder Event Sourcing
+    - Events speichern (nur hinten anfügen, nichts löschen)
+    - Zustand per Replay ermitteln (alle Events „aufsummieren“)
+    - bzw Zwischenstände (Snapshots) festhalten für bessere Performance
+    - siehe auch [Link](https://www.youtube.com/watch?v=yFjzGRb8NOk) bzw [Link](https://www.youtube.com/watch?v=ss9wnixCGRY)
+- bei Bedarf CQRS
+  - schreibende und lesende Aktionen trennen, also zwei separate Datenbanken
+  - Query-Seite ist optimiert für schnelles Lesen, evtl. denormalisiertes Modell
+  - Synchronisation/Aktualisierung notwendig per Event
+- Transaktionen
+  - Ausführung zusammenhängender Geschäftsprozesse (alles oder nichts)
+  - das System bleibt in einem gültigen Zustand
+  - a) lokale Transaktionen innerhalb einer Klasse (zb @Transactional) 
+  - b) Saga Pattern: service-übergreifende Transaktion (ggf. Kompensationsoperation)
+  - c) Transaction Outbox Pattern: garantierte Event-Zustellung über extra DB-Tabelle, siehe auch [Link](https://www.youtube.com/watch?v=tQw99alEVHo)
+
+### 4.5) Daten modellieren
+- es wird ein Modell der Wirklichkeit in der Software benötigt
+- bedeutet alle Objekte/Knoten aus den UseCases müssen abgebildet werden
+- zb Komponenten aus DDD Tactical Design nutzen, siehe auch [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA)
+  - Entity
+    - hat eine stabile Identität, auch wenn sich Eigenschaften ändern
+    - zb "Bestellung"
+  - Value Object
+    - ohne eigene Identität, also zählt nur durch seine Werte
+    - ist unveränderlich (immutable), muss komplett ersetzt werden durch neue Instanz
+    - ermöglicht Wiederverwendung und Verhinderung von Nebeneffekten
+    - zb "Adresse" oder "Geldbetrag"
+  - Aggregate
+    - eine Gruppe zusammengehöriger Objekte, die konsistent als Ganzes verwaltet werden
+    - also Entities + Value Objects, zb "Bestellung" + "Adresse" + "Geldbetrag"
+    - eine Entity fungiert als Aggregate Root
+    - der Zugriff auf Elemente des Aggregates erfolgt ausschließlich via Root-Entity
+    - bedeutet es kann nicht direkt ein Sub-Element von außen geändert werden
+    - im Beispiel ist das Ersetzen der "Adresse" ohne die "Bestellung" nicht möglich
+- falls man das Daten-Modell direkt mit Technologien (Spring-JPA) mischt:
+  - Entity: klassische @Entity mit @Id und Properties
+  - Value Object: 
+    - private + final Properties und keine Setter-Methoden
+    - optional: kann direkt in die Entity-Tabelle eingebettet werden (keine extra Tabelle)
+    - @Embeddable Klasse via @Embedded in @Entity nutzen
+  - Aggregate: Zugriff via @Repository-Interface (extends JpaRepository<Bestellung, Long>)
+
+### 4.6) Daten speichern
+- Datenbank Technologie
+  - a) SQL: strukturierte Daten, komplexe Abfragen
+    - Postgres, MySql, etc
+    - Spring Data JPA / Hibernate: komplex, mit Cache/Persistence-Context und Dirty Checking
+    - oder Data JDBC: einfacher, ohne Caching, führt SQL sofort aus, orientiert an DDD Aggregates
+    - siehe auch [Link](https://www.youtube.com/watch?v=AnIouYdwxo0)
+  - b) NoSQL: unstrukturierte Daten, einfache Abfragen, gute Skalierung
+    - zb MongoDb via Spring Data MongoDB
+    - speichern von Objekten ohne extra Entity-Klasse & Repository möglich
+- Datenbank Tabellen Design
+  - Tabellen normalisieren, um Redundanzen zu minimieren
+  - große verschachtelte Graphen vermeiden, Konsistenzgrenzen einführen
+  - wenn nötig mit IDs (Fremdschlüssel) arbeiten statt direkt zu referenzieren
 
 ## 5) Service bzw Modul intern unterteilen
 

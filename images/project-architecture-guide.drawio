@@ -219,7 +219,7 @@
         <mxCell id="7fS5oWLQzM0IxhjuAHD0-66" value="Schritt 3:&lt;div&gt;&lt;br&gt;&lt;div&gt;Services/Module&lt;div&gt;festlegen&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#FF0000;" parent="1" vertex="1">
           <mxGeometry x="680" y="710" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="7fS5oWLQzM0IxhjuAHD0-67" value="&lt;div&gt;Schritt 4:&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;Services/Module&amp;nbsp;&lt;div&gt;verknüpfen&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;und&lt;/span&gt;&lt;div&gt;Datenfluss planen&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#FF0000;" parent="1" vertex="1">
+        <mxCell id="7fS5oWLQzM0IxhjuAHD0-67" value="&lt;div&gt;Schritt 4:&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Prozesse abbilden&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;und&lt;/span&gt;&lt;div&gt;&lt;div&gt;Datenfluss planen&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#FF0000;" parent="1" vertex="1">
           <mxGeometry x="680" y="1060" width="120" height="100" as="geometry" />
         </mxCell>
         <mxCell id="7fS5oWLQzM0IxhjuAHD0-70" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" parent="1" source="7fS5oWLQzM0IxhjuAHD0-68" target="7fS5oWLQzM0IxhjuAHD0-69" edge="1">
