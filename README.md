@@ -56,6 +56,7 @@
     - ergibt sich ganz natürlich in den Gesprächen mit Fachexperten
     - kann ein oder mehrere Bounded Contexts haben
     - zb "Bestellung", "Zahlung" oder "Produktkatalog" in E-Commerce
+    - siehe auch [Link](https://www.youtube.com/watch?v=NvBsEnDgA4o) bzw [Link](https://www.youtube.com/watch?v=yQgCmMBNle4)
   - Bounded Context
     - Teil vom Lösungsraum
     - der Kontext entsteht aus der fachlichen Sub-Domäne (Übergang Fachlichkeit zu Technik)
@@ -64,7 +65,6 @@
     - zb "Order-Context", "Payment-Context" oder Product-Context in E-Commerce
     - ein Kontext kann später zu einem technischen Service werden, muss aber nicht
     - ebenso sind mehrere Kontexte als Module in einem Service möglich
-  - siehe auch [Link](https://www.youtube.com/watch?v=yQgCmMBNle4)
 - Context-Map (Landkarte) erstellen, siehe auch [Link](https://www.youtube.com/watch?v=c5H0APovhsw)
 - Schnitte einführen, um Kontexte deutlich voneinander abzugrenzen, je nach:
   - Zusammengehörigkeit
@@ -83,7 +83,7 @@
   - Core: Kern der Anwendung, zentrale Business-Prozesse (früher umsetzen, evtl. höher skalieren)
   - Supporting: Unterstützt den Core durch Zusatz-Features (wird erst später umgesetzt)
   - Generic: kein Anwendungsbezug, aber ein notwendiges Übel (kann man dazu kaufen, zb. Nutzerverwaltung)
-- siehe auch Strategic Design von DDD, bzw [Link](https://www.youtube.com/watch?v=NvBsEnDgA4o) und [Link](https://www.youtube.com/watch?v=ttIRNyoLKqE)
+- siehe auch Strategic Design von DDD, bzw [Link](https://www.youtube.com/watch?v=ttIRNyoLKqE)
 
 ## 2.2) Kontext-Beziehungen definieren
 - alle Beziehungen zwischen Kontexten identifizieren
@@ -222,9 +222,34 @@
 - Datenbank Tabellen Design
   - Tabellen normalisieren, um Redundanzen zu minimieren
   - große verschachtelte Graphen vermeiden, Konsistenzgrenzen einführen
-  - wenn nötig mit IDs arbeiten statt direkt zu referenzieren
-  - siehe auch DDD Tactical Design (Entity, Value Object, Aggregate)
-  - und [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA) bzw [Link](https://www.youtube.com/watch?v=BFXuFb40P8k)
+  - wenn nötig mit IDs (Fremdschlüssel) arbeiten statt direkt zu referenzieren
+
+### 4.5) Daten modellieren
+- es wird ein Modell der Wirklichkeit in der Software benötigt
+- bedeutet alle Objekte/Knoten aus den UseCases müssen abgebildet werden
+- zb Komponenten aus DDD Tactical Design nutzen, siehe auch [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA)
+  - Entity
+    - hat eine stabile Identität, auch wenn sich Eigenschaften ändern
+    - zb "Bestellung"
+  - Value Object
+    - ohne eigene Identität, also zählt nur durch seine Werte
+    - ist unveränderlich (immutable), muss komplett ersetzt werden durch neue Instanz
+    - ermöglicht Wiederverwendung und Verhinderung von Nebeneffekten
+    - zb "Adresse" oder "Geldbetrag"
+  - Aggregate
+    - eine Gruppe zusammengehöriger Objekte, die konsistent als Ganzes verwaltet werden
+    - also Entities + Value Objects, zb "Bestellung" + "Adresse" + "Geldbetrag"
+    - eine Entity fungiert als Aggregate Root
+    - der Zugriff auf Elemente des Aggregates erfolgt ausschließlich via Root-Entity
+    - bedeutet es kann nicht direkt ein Sub-Element von außen geändert werden
+    - im Beispiel ist das Ersetzen der "Adresse" ohne die "Bestellung" nicht möglich
+- falls man das Daten-Modell direkt mit Technologien (Spring-JPA) mischt:
+  - Entity: klassische @Entity mit @Id und Properties
+  - Value Object: 
+    - private + final Properties und keine Setter-Methoden
+    - optional: kann direkt in die Entity-Tabelle eingebettet werden (keine extra Tabelle)
+    - @Embeddable Klasse via @Embedded in @Entity nutzen
+  - Aggregate: Zugriff via @Repository-Interface (extends JpaRepository<Bestellung, Long>)
 
 ### 4.5) APIs entwerfen
 - API Konzept/Design
@@ -347,7 +372,7 @@
     - kann irgendwann komplex werden (Service 1 -> Service 2 -> Service 3)
   - b) Domain Model / Object Oriented Design
     - Logik und Daten/State gemeinsam in einer Klasse (Rich Domain Model)
-    - evtl. 2 Entities verwenden, ein technisches und ein fachliches Object (Mapping, [Link](https://youtu.be/VGhg6Tfxb60?t=1550))
+    - evtl. 2 Entities verwenden, ein technisches und ein fachliches Objekt (Mapping!, [Link](https://youtu.be/VGhg6Tfxb60?t=1550))
     - keine Setter nutzen, sondern stattdessen fachliche Methoden
     - Services sind sehr klein und delegieren nur weiter an die Domain Objekte
     - besser erweiterbar/verständlich in einer komplexen Umgebung
