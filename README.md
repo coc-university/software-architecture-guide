@@ -378,9 +378,12 @@
     - @Embeddable Klasse via @Embedded in @Entity nutzen
   - Aggregate: Zugriff via @Repository-Interface (extends JpaRepository<Bestellung, Long>)
 
+## Gesamter Ablauf des Architektur-Leitfadens
+![Ablauf](images/project-architecture-guide.drawio.png)
+
 ## Projektverlauf überwachen
 
-### 1) Subjektive Empfehlungen für den Projektstart und Verlauf
+### 1) Subjektive Empfehlungen für den Start und Verlauf des Projekts
 - Kontexte nach bestem Wissen definieren und stetig Beziehungen prüfen
   - sind die Modellgrenzen nützlich oder behindern sie eher?
   - sind Abhängigkeiten doch anders gerichtet als anfangs gedacht?
@@ -427,7 +430,7 @@
   - Mögliche Optionen vergleichen und eine Entscheidung treffen
   - Begründung der gewählten Lösung und welche Auswirkungen sich daraus ergeben
 
-### 3) Mit technische Schulden umgehen
+### 3) Mit technischen Schulden umgehen
 - diese lassen sich nie komplett vermeiden
 - Ursachen
   - fehlende Architekturplanung bzw Anpassung
@@ -478,6 +481,3 @@
   - Beispiele:
     - https://canvas.arc42.org
     - https://github.com/feststelltaste/software-component-canvas
-
-## Gesamter Ablauf des Architektur-Leitfadens
-![Ablauf](images/project-architecture-guide.drawio.png)
