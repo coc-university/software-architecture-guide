@@ -15,7 +15,7 @@
   - [1) Fachliche Anforderungen sammeln und visualisieren](#1-Fachliche-Anforderungen-sammeln-und-visualisieren)
   - [2) Kontext-Übersicht erstellen](#2-Kontext-Übersicht-erstellen)
   - [3) Technische Services und Module festlegen](#3-Technische-Services-und-Module-festlegen)
-  - [4) Prozesse abbilden und Datenfluss planen](#4-Prozesse-abbilden-und-Datenfluss-planen)
+  - [4) Verteilte Prozesse abbilden und Datenfluss planen](#4-Verteilte-Prozesse-abbilden-und-Datenfluss-planen)
   - [5) Service bzw Modul intern unterteilen](#5-Service-bzw-Modul-intern-unterteilen)
 - Außerdem werden [Tipps für den Projektverlauf](#Projektverlauf-überwachen) gegeben
 
@@ -90,8 +90,8 @@
 - Abhängigkeiten bzw Richtungen betrachten
   - Upstream, Downstream: liefernde und verbrauchende Kontexte
   - Conformist: Downstream muss sich anpassen, ohne Einfluss auf Upstream
-  - Customer/Supplier: aktive Zusammenarbeit der Kontexte
-  - Partnership: beide Seiten sind gleichberechtigt
+  - Customer/Supplier: aktive Zusammenarbeit der Kontexte, einseitige Abhängigkeit
+  - Partnership: beide Seiten sind gleichberechtigt, weil sie gemeinsame Ziele haben
   - Open Host Service: Kontext bietet Schnittstelle für beliebige Nutzer
   - Shared Kernel: gemeinsame Bibliothek (Lib)
   - Separate Ways: Kontexte haben nichts miteinander zu tun und bleiben unabhängig
@@ -134,7 +134,7 @@
 | Unabhängige Datenmodelle der Kontexte (einfach umsetzbar) | nein      | ja            |
 | Technologie-Vielfalt                                      | nein      | ja            |
 
-## 4) Prozesse abbilden und Datenfluss planen
+## 4) Verteilte Prozesse abbilden und Datenfluss planen
 
 ![Bild](images/project-architecture-guide-step-4.drawio.png)
 
@@ -294,34 +294,7 @@
   - b) Saga Pattern: service-übergreifende Transaktion (ggf. Kompensationsoperation)
   - c) Transaction Outbox Pattern: garantierte Event-Zustellung über extra DB-Tabelle, siehe auch [Link](https://www.youtube.com/watch?v=tQw99alEVHo)
 
-### 4.5) Daten modellieren
-- es wird ein Modell der Wirklichkeit in der Software benötigt
-- bedeutet alle Objekte/Knoten aus den UseCases müssen abgebildet werden
-- zb Komponenten aus DDD Tactical Design nutzen, siehe auch [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA)
-  - Entity
-    - hat eine stabile Identität, auch wenn sich Eigenschaften ändern
-    - zb "Bestellung"
-  - Value Object
-    - ohne eigene Identität, also zählt nur durch seine Werte
-    - ist unveränderlich (immutable), muss komplett ersetzt werden durch neue Instanz
-    - ermöglicht Wiederverwendung und Verhinderung von Nebeneffekten
-    - zb "Adresse" oder "Geldbetrag"
-  - Aggregate
-    - eine Gruppe zusammengehöriger Objekte, die konsistent als Ganzes verwaltet werden
-    - also Entities + Value Objects, zb "Bestellung" + "Adresse" + "Geldbetrag"
-    - eine Entity fungiert als Aggregate Root
-    - der Zugriff auf Elemente des Aggregates erfolgt ausschließlich via Root-Entity
-    - bedeutet es kann nicht direkt ein Sub-Element von außen geändert werden
-    - im Beispiel ist das Ersetzen der "Adresse" ohne die "Bestellung" nicht möglich
-- falls man das Daten-Modell direkt mit Technologien (Spring-JPA) mischt:
-  - Entity: klassische @Entity mit @Id und Properties
-  - Value Object: 
-    - private + final Properties und keine Setter-Methoden
-    - optional: kann direkt in die Entity-Tabelle eingebettet werden (keine extra Tabelle)
-    - @Embeddable Klasse via @Embedded in @Entity nutzen
-  - Aggregate: Zugriff via @Repository-Interface (extends JpaRepository<Bestellung, Long>)
-
-### 4.6) Daten speichern
+### 4.5) Datenbank auswählen
 - Datenbank Technologie
   - a) SQL: strukturierte Daten, komplexe Abfragen
     - Postgres, MySql, etc
@@ -332,7 +305,7 @@
     - zb MongoDb via Spring Data MongoDB
     - speichern von Objekten ohne extra Entity-Klasse & Repository möglich
 - Datenbank Tabellen Design
-  - Tabellen normalisieren, um Redundanzen zu minimieren
+  - Tabellen normalisieren, um Redundanzen zu minimieren (nicht unbedingt bei noSQL)
   - große verschachtelte Graphen vermeiden, Konsistenzgrenzen einführen
   - wenn nötig mit IDs (Fremdschlüssel) arbeiten statt direkt zu referenzieren
 
@@ -340,8 +313,9 @@
 
 ![Bild](images/project-architecture-guide-step-5.drawio.png)
 
-- obere Ebene fachlich, danach technisch (Package by Feature, siehe auch [Link](https://www.youtube.com/watch?v=B1d95I7-zsw))
-- ein Service (bzw jedes Modul davon) wird in Schichten/Ringe aufgeteilt
+### 5.1) Innerer Aufbau
+- ein fachliches Feature/Modul im Service auf oberer Ebene (Package by Feature, siehe auch [Link](https://www.youtube.com/watch?v=B1d95I7-zsw))
+- wird intern in technische Schichten/Ringe aufgeteilt (Package by Layer)
 - jede Ebene sollte lose gekoppelt sein zur anderen (Interfaces)
 - Die Beziehungen zwischen den Ebenen bzw Modulen kann zb Spring Modulith (ArcUnit) prüfen
 - Klassen in Java Packages möglichst unsichtbar halten für die Außenwelt (package private)
@@ -376,6 +350,33 @@
     - keine Setter nutzen, sondern stattdessen fachliche Methoden
     - Services sind sehr klein und delegieren nur weiter an die Domain Objekte
     - besser erweiterbar/verständlich in einer komplexen Umgebung
+
+### 5.2) Daten modellieren
+- es wird ein Modell der Wirklichkeit in der Software benötigt
+- bedeutet alle Objekte/Knoten aus den UseCases müssen abgebildet werden
+- zb Komponenten aus DDD Tactical Design nutzen, siehe auch [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA)
+  - Entity
+    - hat eine stabile Identität, auch wenn sich Eigenschaften ändern
+    - zb "Bestellung"
+  - Value Object
+    - ohne eigene Identität, also zählt nur durch seine Werte
+    - ist unveränderlich (immutable), muss komplett ersetzt werden durch neue Instanz
+    - ermöglicht Wiederverwendung und Verhinderung von Nebeneffekten
+    - zb "Adresse" oder "Geldbetrag"
+  - Aggregate
+    - eine Gruppe zusammengehöriger Objekte, die konsistent als Ganzes verwaltet werden
+    - also Entities + Value Objects, zb "Bestellung" + "Adresse" + "Geldbetrag"
+    - eine Entity fungiert als Aggregate Root
+    - der Zugriff auf Elemente des Aggregates erfolgt ausschließlich via Root-Entity
+    - bedeutet es kann nicht direkt ein Sub-Element von außen geändert werden
+    - im Beispiel ist das Ersetzen der "Adresse" ohne die "Bestellung" nicht möglich
+- falls man das Daten-Modell direkt mit Technologien (Spring-JPA) mischt:
+  - Entity: klassische @Entity mit @Id und Properties
+  - Value Object:
+    - private + final Properties und keine Setter-Methoden
+    - optional: kann direkt in die Entity-Tabelle eingebettet werden (keine extra Tabelle)
+    - @Embeddable Klasse via @Embedded in @Entity nutzen
+  - Aggregate: Zugriff via @Repository-Interface (extends JpaRepository<Bestellung, Long>)
 
 ## Projektverlauf überwachen
 
