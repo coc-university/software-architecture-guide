@@ -16,7 +16,7 @@
   - [2) Kontext-Übersicht erstellen](#2-Kontext-Übersicht-erstellen)
   - [3) Technische Services und Module festlegen](#3-Technische-Services-und-Module-festlegen)
   - [4) Verteilte Prozesse abbilden und Datenfluss planen](#4-Verteilte-Prozesse-abbilden-und-Datenfluss-planen)
-  - [5) Service bzw Modul intern unterteilen](#5-Service-bzw-Modul-intern-unterteilen)
+  - [5) Service aufbauen](#5-Service-aufbauen)
 - Außerdem werden [Tipps für den Projektverlauf](#Projektverlauf-überwachen) gegeben
 
 ## 1) Fachliche Anforderungen sammeln und visualisieren
@@ -309,11 +309,11 @@
   - große verschachtelte Graphen vermeiden, Konsistenzgrenzen einführen
   - wenn nötig mit IDs (Fremdschlüssel) arbeiten statt direkt zu referenzieren
 
-## 5) Service bzw Modul intern unterteilen
+## 5) Service aufbauen
 
 ![Bild](images/project-architecture-guide-step-5.drawio.png)
 
-### 5.1) Innerer Aufbau
+### 5.1) Inneren Aufbau festlegen
 - ein fachliches Feature/Modul im Service auf oberer Ebene (Package by Feature, siehe auch [Link](https://www.youtube.com/watch?v=B1d95I7-zsw))
 - wird intern in technische Schichten/Ringe aufgeteilt (Package by Layer)
 - jede Ebene sollte lose gekoppelt sein zur anderen (Interfaces)

@@ -215,8 +215,8 @@
         <mxCell id="7fS5oWLQzM0IxhjuAHD0-69" value="" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=middle;strokeColor=light-dark(#000000,#0433FF);" parent="1" vertex="1">
           <mxGeometry x="560" y="1150" width="60" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="7fS5oWLQzM0IxhjuAHD0-73" value="&lt;div&gt;Schritt 5:&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;Service/Modul&amp;nbsp;&lt;div&gt;intern unterteilen&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#FF0000;" parent="1" vertex="1">
-          <mxGeometry x="680" y="1440" width="120" height="80" as="geometry" />
+        <mxCell id="7fS5oWLQzM0IxhjuAHD0-73" value="&lt;div&gt;Schritt 5:&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;Service aufbauen" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#FF0000;" parent="1" vertex="1">
+          <mxGeometry x="680" y="1440" width="120" height="70" as="geometry" />
         </mxCell>
         <mxCell id="7fS5oWLQzM0IxhjuAHD0-74" value="DB" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.database;whiteSpace=wrap;labelPosition=center;verticalLabelPosition=bottom;align=center;verticalAlign=top;" parent="1" vertex="1">
           <mxGeometry x="390" y="1310" width="60" height="60" as="geometry" />
