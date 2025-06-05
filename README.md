@@ -495,8 +495,14 @@
   - kategorisieren nach Typ und Risiko
   - sichtbar machen über Dokumentation, zb TDR, siehe auch [Link](https://www.heise.de/blog/Technical-Debt-Records-Dokumentation-technischer-Schulden-9876115.html)
   - kommunizieren bei der Projektplanung
-  - Auswirkungen/Kosten aufzeigen
-  - nach und nach minimieren durch zb Refactorings
+  - Auswirkungen aufzeigen, zb:
+    - steigende Kosten für das Projekt
+    - geringere Entwicklungsgeschwindigkeit neuer Features
+    - höhere Fehleranfälligkeit im Produktivbetrieb
+  - nach und nach minimieren durch extra Tickets im Sprint, zb
+    - Architektur im Team und mit Experten besprechen + nachziehen
+    - Aktualisierung und Automatisierung der Infrastruktur
+    - Refactorings im Code
 
 ### 4) Dokumentation der Architektur
 - Allgemein
@@ -505,16 +511,17 @@
   - der Fokus sollte auf konstante/stabile Bereiche gelegt werden
   - Elemente die sich noch häufig ändern nur auf hoher Flugebene anreißen
 - Technische Architektur festhalten
-  - Bausteine visualisieren über zb arc42-Bausteinsicht mit C4-Modell zur Unterteilung
+  - Strukturvorgabe und Templates im deutschsprachigen Raum meist via [arc42](https://arc42.de/overview/)
+  - Bausteine visualisieren über zb arc42-Bausteinsicht mit [C4-Modell](https://c4model.com) zur Unterteilung
+  - C4 besteht aus Context, Container, Component und Code (Top-Down)
   - Sequenzdiagramme mit zb UML in arc42-Laufzeitsicht zeigen dynamisches Verhalten
-  - arc42: https://arc42.de/overview/
-  - C4 (Context, Container, Component, Code): https://c4model.com
+- Tools
+  - für C4: zb [structurizr](https://structurizr.com) oder [C4-PlantUML](https://github.com/plantuml-stdlib/C4-PlantUML)
+  - für UML: zb [PlantUML](https://plantuml.com/de/) oder [draw.io](https://www.drawio.com)
 - Canvas
   - kompakte, übersichtliche Darstellung auf einer Seite in einer Tabelle
   - Leinwand (Canvas) mit vorgegebenen Feldern
   - enthält nur die wichtigsten Aspekte eines Systems
   - leichtgewichtiges Hilfsmittel für frühe Projektphasen oder Reviews
   - kein Ersatz zu arc42, sondern eine Ergänzung 
-  - Beispiele:
-    - https://canvas.arc42.org
-    - https://github.com/feststelltaste/software-component-canvas
+  - Vorlagen: zb [arc42-Canvas](https://canvas.arc42.org), [software-component-canvas](https://github.com/feststelltaste/software-component-canvas)
