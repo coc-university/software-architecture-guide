@@ -107,6 +107,7 @@
 
 ![Bild](images/project-architecture-guide-step-3.drawio.png)
 
+### 3.1) Modulith vs Microservices
 - aus den fachlichen Kontexten sollen technische Bausteine entstehen
 - jeder Kontext kann ein eigenständiger Service sein, oder nur ein Modul im Service
 - Abwägung (Trade-off) zwischen Unabhängigkeit und Komplexität
@@ -133,6 +134,35 @@
 | Deployment-Automatisierung (Pipelines) notwendig          | nein      | ja            |
 | Unabhängige Datenmodelle der Kontexte (einfach umsetzbar) | nein      | ja            |
 | Technologie-Vielfalt                                      | nein      | ja            |
+| Übergreifende Suche/Refactorings einfach möglich          | ja        | nein          |
+| Falschen Kontext-Schnitt einfach beheben                  | ja        | nein          |
+
+### 3.2) Von Modulith zu Microservices wechseln im Projektverlauf
+- Herausschneiden eines fachlichen Moduls (zb Java-Package) in ein eigenes Repo
+- dadurch mehr Flexibilität, aber auch Aufwand in der Entwicklung
+- Ablauf & Herausforderungen
+  - Interne Java-Schnittstellen bzw Methodenaufrufe zu Http-APIs oder Event umwandeln
+  - Datenbank-Schema auftrennen und herauslösen für extra Service-DB
+  - Transaktionen nun service-übergreifend abbilden (Koordination notwendig)
+  - Querschnittsthemen (Logging, Error-Handling) ggf. duplizieren
+- Tipps:
+  - gerade zu Projektbeginn noch eher einfach möglich
+  - nicht bis auf den letzten Moment warten mit dem Herauslösen, falls eh absehbar
+  - ein komplexes Projekt, das ohnehin Services nutzen wird, direkt so starten
+  - andernfalls erstmal mit Modulith beginnen (einfaches Refactoring, APIs, etc)
+
+### 3.3) Umgekehrter Wechsel, also von Microservices zu Modulith 
+- Services zusammenführen in einen laufenden Prozess
+- dadurch übersichtlicher/einfacher, aber weniger flexibel
+- Ablauf & Herausforderungen
+  - die Art der Modularisierung auswählen (Java, Maven, Lib, etc)
+  - Modulgrenzen definieren (ein Microservice == ein Modul ?) 
+  - Einhaltung der Grenzen prüfen (Spring Modulith bzw ArcUnit)
+  - Änderungen an APIs, DB-Schema, etc umgekehrt zu oben
+- Tipps: 
+  - falls Schmerz mit Microservices verkraftbar ist, dann dabei bleiben
+  - ein Wechsel im fortgeschrittenen Projektstadium wird aufwendig
+  - ungewohnt "weiche" Kontext-Grenzen verführen zu Arc-Fehlern
 
 ## 4) Verteilte Prozesse abbilden und Datenfluss planen
 
@@ -208,9 +238,11 @@
     - siehe auch [Link](https://www.youtube.com/watch?v=vS7sCJ1uezY)
 - API Technologie
   - synchron (Request/Response)
-    - a) Plain Http
+    - a) Java Methoden-Call in Modulith
+      - direkter interner Aufruf ohne Http (gegen Schnittstelle von Modul) 
+    - b) Plain Http
       - Grundbausteine von Http: Url-Pfade, Http-Verben, Status-Codes, etc
-    - b) REST:
+    - c) REST:
       - für einfache Service-to-Service Kommunikation
       - Basiert stark auf Plain Http und erweitert es
       - nutzt technische CRUD Operationen
@@ -220,12 +252,12 @@
       - es gibt 4 Level die beschreiben wie "RESTful" eine API tatsächlich ist
       - in der Praxis meist keine HATEOAS Links im Einsatz (höchstes Level)
       - möglich Erweiterung: Reactive Stream (Spring Webflux, non-blocking)
-    - c) gRPC:
+    - d) gRPC:
       - für sehr schnelle Service-to-Service Kommunikation
       - direkte Methodenaufrufe im anderen Service, keine Ressourcen
       - nutzt das binäre Format Protobuf (statt Http/Json)
       - daher nicht direkt lesbar, schwerer zu debuggen
-    - d) GraphQL:
+    - e) GraphQL:
       - zwischen Frontend und Backend
       - nur ein Endpunkt (/graphql), nur POST-Requests, immer Status-Code 200
       - kein Over/Under-Fetching, selektieren von Properties
@@ -234,6 +266,7 @@
     - siehe auch [Link](https://www.youtube.com/watch?v=NsdnGAAJfDk)
   - asynchron
     - Messaging-System: RabbitMQ, Kafka, etc.
+    - Spring Modulith: Event Publication Registry
     - Sonstiges: zb Webhooks, WebSockets, Server-Sent Events, etc
 - Zusammenspiel aus Konzept und Technologie
   - a) CQRS/Events + Plain Http
@@ -304,6 +337,10 @@
   - b) NoSQL: unstrukturierte Daten, einfache Abfragen, gute Skalierung
     - zb MongoDb via Spring Data MongoDB
     - speichern von Objekten ohne extra Entity-Klasse & Repository möglich
+- Bei Modulith
+  - Tabellen möglichst separat halten, keine Kopplung der Module über die Daten
+  - zb eigenes Datenbank-Schema pro Modul
+  - oder mit Prefix in Tabellen-Namen arbeiten, falls nur ein Schema gewünscht
 - Datenbank Tabellen Design
   - Tabellen normalisieren, um Redundanzen zu minimieren (nicht unbedingt bei noSQL)
   - große verschachtelte Graphen vermeiden, Konsistenzgrenzen einführen
