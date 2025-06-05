@@ -10,7 +10,8 @@
   - generell spielen unabhängige Kontexte und Kopplung/Kohäsion eine große Rolle
   - es sind viele Konzepte von Domain Driven Design (DDD) enthalten
   - denn die fachlichen Abläufe sollten in der Technik abgebildet werden
-  - bei den Technologien wird Java & Spring Boot beispielhaft referenziert
+  - bei den Backend-Technologien wird Java & Spring Boot beispielhaft referenziert
+  - der Frontend-Bereich wird eher ausgeklammert
 - Abschnitte
   - [1) Fachliche Anforderungen sammeln und visualisieren](#1-Fachliche-Anforderungen-sammeln-und-visualisieren)
   - [2) Kontext-Übersicht erstellen](#2-Kontext-Übersicht-erstellen)
@@ -414,6 +415,30 @@
     - optional: kann direkt in die Entity-Tabelle eingebettet werden (keine extra Tabelle)
     - @Embeddable Klasse via @Embedded in @Entity nutzen
   - Aggregate: Zugriff via @Repository-Interface (extends JpaRepository<Bestellung, Long>)
+
+### 5.3) Frontend
+- die UI wurde in diesem Dokument bewusst eher ausgeklammert, kurz und knapp:
+- Aufteilung
+  - a) ein extra Frontend für alle Services
+    - typischerweise gibt es in einer Microservice-Architektur ein separates Frontend
+    - also eine eigenständige App, die über APIs die verschiedenen Backends aufruft
+    - ggf. wird es von einem extra Team entwickelt
+  - b) Frontend pro Service
+    - jeder Service kann aber auch ein eigenes Frontend besitzen
+    - damit nähert es sich einem Self-Contained Systems (SCS) an
+    - es bildet einen Geschäftsbereich mit Frontend, Backend und Datenbank ab
+    - falls es keine/geringe Abhängigkeiten zu anderen Services gibt
+    - das SCS ist also umfangreicher und autarker als ein Microservice
+    - und wird in der Regel nur von einem Team betreut
+- Backend for Frontend (BFF)
+  - jedes Frontend kann bei Bedarf noch ein kleines Backend im Hintergrund besitzen
+  - also Frontend -> BFF -> Backends
+  - das BFF ist spezialisiert für die Art der UI, zb Web-Frontend oder Mobile-App
+  - es aggregiert und transformiert die Responses der unterschiedlichen Backends
+  - und stellt die Daten maßgeschneidert, im passenden Format bereit ohne Overhead
+  - Logik wird also aus dem Frontend herausgezogen in das BFF
+  - es kann auch Funktionen eines API-Gateways integrieren (Auth, Rate Limiting, etc)
+  - falls nur ein BFF gewünscht ist bietet sich GraphQl an
 
 ## Gesamter Ablauf des Architektur-Leitfadens
 ![Ablauf](images/project-architecture-guide.drawio.png)
