@@ -269,6 +269,15 @@
     - Messaging-System: RabbitMQ, Kafka, etc.
     - Spring Modulith: Event Publication Registry
     - Sonstiges: zb Webhooks, WebSockets, Server-Sent Events, etc
+  - Entscheidung synchron vs asynchron
+    - synchron
+      - einfacher intuitiver Ablauf, leicht nachzuvollziehen (Entwicklung, Debuggen, Monitoring)
+      - direktes Feedback (Antwort oder Fehlermeldung) ohne Umwege
+      - keine zusätzliche Infrastruktur nötig, wie zb Message Broker
+    - asynchron/event-getrieben
+      - Entkopplung der Services, daher einfach erweiterbar um weitere Consumer
+      - Pufferung von Messages in Broker (gute Skalierung bei Last)
+      - bei einem Ausfall können Events zwischengespeichert und später verarbeitet werden
 - Zusammenspiel aus Konzept und Technologie
   - a) CQRS/Events + Plain Http
     - Commands und Queries synchron via Request/Response übertragen
