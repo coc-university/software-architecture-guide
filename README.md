@@ -22,7 +22,7 @@
 
 ## 1) Fachliche Anforderungen sammeln und visualisieren
 
-![Bild](images/project-architecture-guide-step-1.drawio.png)
+![Bild](images/software-architecture-guide-step-1.drawio.png)
 
 - Alle relevanten Personen zusammen bringen
   - Fachexperten, Techniker, Projektleitung, etc
@@ -47,7 +47,7 @@
 
 ## 2) Kontext-Übersicht erstellen
 
-![Bild](images/project-architecture-guide-step-2.drawio.png)
+![Bild](images/software-architecture-guide-step-2.drawio.png)
 
 ## 2.1) Kontexte ermitteln
 - Die Domäne in Sub-Domänen und Bounded Contexts unterteilen
@@ -106,7 +106,7 @@
 
 ## 3) Technische Services und Module festlegen
 
-![Bild](images/project-architecture-guide-step-3.drawio.png)
+![Bild](images/software-architecture-guide-step-3.drawio.png)
 
 ### 3.1) Modulith vs Microservices
 - aus den fachlichen Kontexten sollen technische Bausteine entstehen
@@ -167,7 +167,7 @@
 
 ## 4) Verteilte Prozesse abbilden und Datenfluss planen
 
-![Bild](images/project-architecture-guide-step-4.drawio.png)
+![Bild](images/software-architecture-guide-step-4.drawio.png)
 
 ### 4.1) Verteilte Prozesse koordinieren
 - die Geschäftsprozesse sollen in der Technik abgebildet werden
@@ -358,7 +358,7 @@
 
 ## 5) Service aufbauen
 
-![Bild](images/project-architecture-guide-step-5.drawio.png)
+![Bild](images/software-architecture-guide-step-5.drawio.png)
 
 ### 5.1) Inneren Aufbau festlegen
 - ein fachliches Feature/Modul im Service auf oberer Ebene (Package by Feature, siehe auch [Link](https://www.youtube.com/watch?v=B1d95I7-zsw))
@@ -450,7 +450,7 @@
   - falls nur ein BFF gewünscht ist bietet sich GraphQl an
 
 ## Gesamter Ablauf des Architektur-Leitfadens
-![Ablauf](images/project-architecture-guide.drawio.png)
+![Ablauf](images/software-architecture-guide-all-steps.drawio.png)
 
 ## Projektverlauf überwachen
 
@@ -481,6 +481,8 @@
     - also lieber wenige Test, aber genau auf die fachlichen UseCases bezogen
     - statt viele technische Randbedingen zu prüfen, die Qualität vorgaukeln 
   - Refactoring durchführen, also Klassenstrukturen/Methoden gerade ziehen 
+
+TODO: add image with example setup
 
 ### 2) Architektur entwickelt sich weiter
 - ein perfekter Entwurf zum Projektstart ist unrealistisch
