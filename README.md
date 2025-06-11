@@ -18,6 +18,7 @@
   - [3) Technische Services und Module festlegen](#3-Technische-Services-und-Module-festlegen)
   - [4) Verteilte Prozesse abbilden und Datenfluss planen](#4-Verteilte-Prozesse-abbilden-und-Datenfluss-planen)
   - [5) Service aufbauen](#5-Service-aufbauen)
+- Ein [Beispiel-Projekt](#Beispiel-Projekt) aus der Praxis macht die Konzepte greifbarer
 - Außerdem werden [Tipps für den Projektverlauf](#Projektverlauf-überwachen) gegeben
 
 ## 1) Fachliche Anforderungen sammeln und visualisieren
@@ -452,6 +453,50 @@
 ## Gesamter Ablauf des Architektur-Leitfadens
 ![Ablauf](images/software-architecture-guide-all-steps.drawio.png)
 
+## Beispiel-Projekt
+
+### 1) Vorgaben
+- Aufgabe: Verwaltung einer Bibliothek
+- Randbedingungen
+  - kleines Team, also nur wenige Entwickler
+  - kurze/mittlere Entwicklungsdauer geplant
+- nicht-funktionale Anforderungen
+  - Kosten sollten überschaubar bleiben
+  - keine hohe Skalierung notwendig
+  - wenige gleichzeitige Benutzer
+  - Anwendung wird nur tagsüber eingesetzt
+
+### 2) Durchführung
+![Ablauf](images/software-architecture-guide-example.drawio.png)
+
+### 3) Erklärung
+- aus dem Sequenzdiagramm ergibt sich
+  - das Ausleihen und Zurückgeben von Büchern ist der Haupt-UseCase
+  - dies wird über einen Benutzer getriggert
+  - die Benutzer-Verwaltung könnte dazugekauft werden
+  - der Bibliothekar muss nicht extra abgebildet werden in der Software
+- es wird ein modularer Monolith verwendet, keine Microservices
+  - denn es muss nicht separat skaliert werden
+  - und es gibt nur ein kleines Entwickler-Team
+  - das mit überschaubaren Kosten die Anwendung entwickeln soll
+- die APIs sind fachlich mit CQRS formuliert
+  - sprechende Commands & Queries verdeutlichen die Intension
+  - obwohl initial auch technische REST-Endpunkte möglich wären
+  - aber CRUD wäre bei steigenden Anforderungen nicht mehr passend
+  - die Kommunikation erfolgt anfangs synchron mit Request/Response
+- es wird nur eine physische Datenbank verwendet, aber extra Schemas je Modul
+  - so wird eine Trennung der Datenmodelle erzwungen
+  - es ist also keine direkte Kopplung der Entitäten/Kontexte möglich
+  - nur eine Datenbank-Instanz reduziert Kosten
+  - SQL passt gut zu den vorhandenen Strukturen
+  - auf Event Sourcing wird verzichtet, da Historie nicht relevant
+- kein Anti Corruption Layer in Ausleih-Modul
+  - es wird das Datenmodell der anderen beiden Kontexte übernommen
+  - Bücher und Benutzer werden über IDs referenziert
+- der Zugriff auf Clients und die Datenbank wird abstrahiert
+  - Schnittstellen ermöglichen später mehr Flexibilität
+  - Nutzung von Ports & Adapters
+
 ## Projektverlauf überwachen
 
 ### 1) Subjektive Empfehlungen für den Start und Verlauf des Projekts
@@ -480,9 +525,7 @@
     - Fokus auf Qualität statt Menge/Code-Coverage
     - also lieber wenige Test, aber genau auf die fachlichen UseCases bezogen
     - statt viele technische Randbedingen zu prüfen, die Qualität vorgaukeln 
-  - Refactoring durchführen, also Klassenstrukturen/Methoden gerade ziehen 
-
-TODO: add image with example setup
+  - Refactoring durchführen, also Klassenstrukturen/Methoden gerade ziehen
 
 ### 2) Architektur entwickelt sich weiter
 - ein perfekter Entwurf zum Projektstart ist unrealistisch
