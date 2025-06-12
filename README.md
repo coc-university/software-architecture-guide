@@ -45,6 +45,7 @@
 - Geschäftsprozesse bzw Use-Cases grafisch modellieren
   - Akteure/Objekte bilden Knoten im Diagramm (später Service oder Entity im Code)
   - Aktivitäten sind Verknüpfungen/Kanten über beschriftete Pfeile (später API oder Methode)
+  - zb Sequenzdiagramm oder Flowchart
 
 ## 2) Kontext-Übersicht erstellen
 
