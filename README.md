@@ -457,7 +457,9 @@
 ## Beispiel-Projekt
 
 ### 1) Vorgaben
-- Aufgabe: Verwaltung einer Bibliothek
+- Aufgabe: 
+  - Verwaltung einer einfachen Bibliothek
+  - Software soll von Bibliothekar genutzt werden
 - Randbedingungen
   - kleines Team, also nur wenige Entwickler
   - kurze Entwicklungsdauer geplant
@@ -499,9 +501,22 @@
   - Schnittstellen ermöglichen später mehr Flexibilität
   - Nutzung von Ports & Adapters
 
+### 4) Technische Umsetzung
+- ein Git-Repository aufsetzen
+- ein Spring-Boot Projekt anlegen
+  - Starter-Dependencies (Web, Data) einfügen
+  - fachliche Module definieren
+  - Controller, Services, Entities, Clients. etc anlegen
+  - automatisierte Tests kontinuierlich erweitern
+- Datenbank als Docker-Container hochfahren
+- regelmäßig neue Stände via Pipeline deployen in Cloud
+- manuelle Tests via API-Client
+- Monitoring der Logs
+- Architektur in Dokumentation festhalten
+
 ## Projektverlauf überwachen
 
-### 1) Subjektive Empfehlungen für den Start und Verlauf des Projekts
+### 1) Subjektive Empfehlungen für den Start und Verlauf eines Projekts
 - Kontexte nach bestem Wissen definieren und stetig Beziehungen prüfen
   - sind die Modellgrenzen nützlich oder behindern sie eher?
   - sind Abhängigkeiten doch anders gerichtet als anfangs gedacht?
