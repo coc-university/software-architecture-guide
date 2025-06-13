@@ -63,11 +63,14 @@
   - Bounded Context
     - Teil vom Lösungsraum
     - der Kontext entsteht aus der fachlichen Sub-Domäne (Übergang Fachlichkeit zu Technik)
-    - wird explizit modelliert während des Projekts anhand von Randbedingungen
-    - Begrenzung der Gültigkeit eines bestimmten Modells und der zugehörigen Sprache
     - zb "Order-Context", "Payment-Context" oder Product-Context in E-Commerce
-    - ein Kontext kann später zu einem technischen Service werden, muss aber nicht
-    - ebenso sind mehrere Kontexte als Module in einem Service möglich
+    - Modelle einführen
+      - jeder Kontext wird explizit modelliert im Projekt, ist also nicht natürlich vorhanden
+      - das Modell soll nicht die reale Welt mit allen Details kopieren
+      - sondern gerade genug Informationen bieten zur Lösung des Problems
+    - Ausblick auf die Technik
+      - ein Kontext kann später zu einem technischen Service werden, muss aber nicht
+      - ebenso sind mehrere Kontexte als Module in einem Service möglich
 - Context-Map (Landkarte) erstellen, siehe auch [Link](https://www.youtube.com/watch?v=c5H0APovhsw)
 - Schnitte einführen, um Kontexte deutlich voneinander abzugrenzen, je nach:
   - Zusammengehörigkeit
@@ -75,17 +78,32 @@
     - also wo besteht eine hohe Kohäsion mit gleichzeitig geringe Kopplung zu anderen Bereichen
     - jeder Kontext sollte möglichst isoliert und unabhängig bestehen können
   - Modell- und Sprachgrenzen
+    - Begrenzung der Gültigkeit/Konsistenz eines bestimmten Modells und der zugehörigen Sprache
     - wo gibt es sprachliche Differenzen, also unterschiedliche Bedeutungen für denselben Begriff
     - ein Domänen-Objekt soll nicht global einheitlich für alle Bereiche gelten
     - stattdessen hat jeder Kontext sein eigenes individuelles Modell
+    - die Ubiquitous Language ist nur im jeweiligen Kontext gültig
     - Beispiel "Bestellung": Unterschied zwischen Vertrieb und Logistik, aber gleicher Name
   - Verantwortung über Daten
     - wer ist der Besitzer der Entitäten im Gesamtprozess, wo gibt es Abhängigkeiten
     - wichtig für die spätere Verknüpfung der Kontexte
 - Kontexte in Kategorien einteilen
-  - Core: Kern der Anwendung, zentrale Business-Prozesse (früher umsetzen, evtl. höher skalieren)
-  - Supporting: Unterstützt den Core durch Zusatz-Features (wird erst später umgesetzt)
-  - Generic: kein Anwendungsbezug, aber ein notwendiges Übel (kann man dazu kaufen, zb. Nutzerverwaltung)
+  - Core: 
+    - Kern der Anwendung, zentrale Business-Prozesse
+    - bietet Wettbewerbsvorteil auf dem Markt
+    - hat eher hohe Komplexität und ändert sich häufiger 
+    - möglichst erfahrene Entwickler einsetzen
+    - früher umsetzen, evtl. höher skalieren
+  - Supporting: 
+    - unterstützt den Core durch Zusatz-Features 
+    - eher allgemeine Aufgaben und weniger Änderungen
+    - bietet kein Alleinstellungsmerkmal wie der Code
+    - juniorige Entwickler können hier wachsen
+    - wird erst später umgesetzt im Projektverlauf
+  - Generic: 
+    - kein Anwendungsbezug, aber ein notwendiges Übel
+    - löst teils komplexe, aber schon bekannte Probleme
+    - kann man dazukaufen oder outsourcen, zb. Nutzerverwaltung
 - siehe auch Strategic Design von DDD, bzw [Link](https://www.youtube.com/watch?v=ttIRNyoLKqE)
 
 ## 2.2) Kontext-Beziehungen definieren
