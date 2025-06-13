@@ -460,11 +460,10 @@
 - Aufgabe: Verwaltung einer Bibliothek
 - Randbedingungen
   - kleines Team, also nur wenige Entwickler
-  - kurze/mittlere Entwicklungsdauer geplant
+  - kurze Entwicklungsdauer geplant
 - nicht-funktionale Anforderungen
-  - Kosten sollten überschaubar bleiben
-  - keine hohe Skalierung notwendig
-  - wenige gleichzeitige Benutzer
+  - Kosten sollten niedrig bleiben
+  - wenige gleichzeitige Nutzer, keine hohe Skalierung notwendig
   - Anwendung wird nur tagsüber eingesetzt
 
 ### 2) Durchführung
@@ -472,10 +471,11 @@
 
 ### 3) Erklärung
 - aus dem Sequenzdiagramm ergibt sich
-  - das Ausleihen und Zurückgeben von Büchern ist der Haupt-UseCase
-  - dies wird über einen Benutzer getriggert
-  - die Benutzer-Verwaltung könnte dazugekauft werden
-  - der Bibliothekar muss nicht extra abgebildet werden in der Software
+  - das Ausleihen und Zurückgeben von Büchern ist der Haupt-UseCase (Core)
+  - die Verwaltung von Büchern und Nutzern ist ein notwendiges Übel
+  - die Nutzerverwaltung könnte dazugekauft werden (Generic)
+  - die Buchverwaltung kann einfach gehalten werden (Supporting)
+  - der Bibliothekar muss nicht extra abgebildet werden, er nutzt die Software
 - es wird ein modularer Monolith verwendet, keine Microservices
   - denn es muss nicht separat skaliert werden
   - und es gibt nur ein kleines Entwickler-Team
@@ -488,12 +488,13 @@
 - es wird nur eine physische Datenbank verwendet, aber extra Schemas je Modul
   - so wird eine Trennung der Datenmodelle erzwungen
   - es ist also keine direkte Kopplung der Entitäten/Kontexte möglich
+  - dies ermöglicht später eine einfachere Auftrennung in Services
   - nur eine Datenbank-Instanz reduziert Kosten
   - SQL passt gut zu den vorhandenen Strukturen
   - auf Event Sourcing wird verzichtet, da Historie nicht relevant
 - kein Anti Corruption Layer in Ausleih-Modul
   - es wird das Datenmodell der anderen beiden Kontexte übernommen
-  - Bücher und Benutzer werden über IDs referenziert
+  - Bücher und Nutzer werden über IDs referenziert
 - der Zugriff auf Clients und die Datenbank wird abstrahiert
   - Schnittstellen ermöglichen später mehr Flexibilität
   - Nutzung von Ports & Adapters
