@@ -444,11 +444,9 @@ Services auftrennen
 - Denn es sollen fortlaufend neue Anforderungen vom PO umgesetzt werden
 - Es entsteht ein Service-Caos, also die Verantwortlichkeiten/Abhängigkeiten sind unklar
 - Als Lösung wird im Beispiel der BuchService aufgetrennt
-
 - UseCases einführen
   - Logik zur Orchestrierung landet in UseCase-Klassen 
   - Dafür ist ein extra Onion-Ring bzw Package vorgesehen
-
 - Domain Model / Object Oriented Design
   - Fachliche Regeln (zb Validierung) werden in die Entity verschoben
   - Die Entity hat also nicht mehr Getter/Setter, sondern fachliche Methoden
@@ -456,7 +454,6 @@ Services auftrennen
   - Logik und Daten/State liegen somit gemeinsam in einer Klasse (Rich Domain Model)
   - Außerdem gibt es nach wie vor JPA-Annotation zur Verarbeitung in der Datenbank
   - Dies wird in einem späteren Schritt gefixt
-
 - Domain Service bleibt übrig:
   - Der anfängliche BuchService wird zum DomainService
   - Es bleibt nur Logik zurück, die Entity-übergreifend ist und nicht orchestriert
@@ -466,15 +463,17 @@ Services auftrennen
 
 API-Clients auftrennen
 - Problem: die UseCases (bzw die Domain) hängt direkt von der Technik ab
-- Lösung: Ein Interface dreht via Dependency Inversion die Abhängigkeit um
+- Lösung: Ein Interface (Port) dreht via Dependency Inversion die Abhängigkeit um
 - Wichtig: die fachliche Schnittstelle liegt nicht im Infrastruktur-Package!
 - Der Fachlichkeit ist somit egal, ob REST oder etwas anderes verwendet wird
+- Zur Laufzeit steht einfach via Dependency Injection eine Implementierung bereit
 
 ![Bild](images/layers_to_ddd_onion/software-architecture-guide-layers-to-ddd-onion-5.drawio.png)
 
 Persistenz auftrennen
 - Problem: in der Domain befindet sich nach wie vor Technik in Form von JPA
 - Lösung: auch für die Entity und das Repository fachliche Klassen/Schnittstellen einführen
+- Also ebenso hier wieder Dependency Inversion via Ports (wie beim Client)
   - Entity
     - Die Entity wird aufgetrennt in eine fachliche DomainEntity
     - Alles mit Technik liegt in der JPAEntity
@@ -488,8 +487,8 @@ Persistenz auftrennen
 - Folgendes Video beschreibt einen Weg ohne Split, siehe [Link](https://youtu.be/VGhg6Tfxb60?t=1550)
 
 ### 5.4) Daten modellieren
-- es wird ein Modell der Wirklichkeit in der Software benötigt
-- bedeutet alle Objekte/Knoten aus den fachlichen Abläufen müssen abgebildet werden
+- Es wird ein Modell der Wirklichkeit in der Software benötigt
+- Bedeutet, alle Objekte/Knoten aus den fachlichen Abläufen müssen abgebildet werden
 - zb Komponenten aus DDD Tactical Design nutzen, siehe auch [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA)
   - Entity
     - hat eine stabile Identität, auch wenn sich Eigenschaften ändern
@@ -502,7 +501,7 @@ Persistenz auftrennen
   - Aggregate
     - eine Gruppe zusammengehöriger Objekte, die konsistent als Ganzes verwaltet werden
     - also Entities + Value Objects, zb "Bestellung" + "Adresse" + "Geldbetrag"
-    - eine Entity fungiert als Aggregate Root
+    - eine Entity fungiert als Aggregate Root (Abruf via Repository)
     - der Zugriff auf Elemente des Aggregates erfolgt ausschließlich via Root-Entity
     - bedeutet es kann nicht direkt ein Sub-Element von außen geändert werden
     - im Beispiel ist das Ersetzen der "Adresse" ohne die "Bestellung" nicht möglich
@@ -514,7 +513,37 @@ Persistenz auftrennen
     - @Embeddable Klasse via @Embedded in @Entity nutzen
   - Aggregate: Zugriff via @Repository-Interface (extends JpaRepository<Bestellung, Long>)
 
-### 5.3) Frontend
+### 5.5) Zusammenfassung
+
+![Bild](images/layers_to_ddd_onion/software-architecture-guide-layers-to-ddd-onion-6.drawio.png)
+
+- Ein fachlicher Geschäftsprozess wird durch die DDD-Onion Architektur sauber aufgeteilt
+- Es gibt nicht mehr viele vermischte Service-Klassen mit enger Kopplung zur Technik
+- Stattdessen hat jede Ebene eine klare Verantwortung und fachliche Schnittstellen (Ports)
+- Die Abhängigkeiten verlaufen von außen nach innen (Fachlichkeit ohne Technik) 
+- Ablauf eines Prozesses
+  - Ein UseCase wird vom Inbound-Adapter getriggert und orchestriert den groben Ablauf
+  - Er läd über das DomainRepository ein Aggregat an Entities und Value Objects
+  - Zusätzlich kann er über den Client-Port weitere Daten anfragen
+  - Beide Aufrufe kennen die konkrete Technik dahinter nicht, nur fachliche Objekte & Methoden
+  - Nun können Zustände verändert und wieder gespeichert werden
+  - Dabei weiß jede Entity selbstständig, welche Aktionen erlaubt sind
+  - Das Ergebnis meldet der UseCase an den Adapter zurück oder sendet ein Event
+- Vorteil Testing
+  - Die Fachlogik kann unabhängig/isoliert von der Technik getestet werden
+  - Z.B. kann hinter dem DomainRepository (Port) ein Mock via In-Memory-Liste stecken
+  - Der Unit-Test läuft somit sehr schnell durch
+  - Außerdem fokussiert er sich rein auf die Logik (bessere Wartung)
+- Vorteil Austauschbarkeit
+  - Ohne die Kopplung zur Technik kann man einfach APIs oder DBs austauschen
+  - Tendenziell ändert sich die Technik häufiger als die Fachlogik
+- Vorteil Langlebigkeit
+  - Die Fachlogik ist das Wertvollste der gesamten Architektur und muss geschützt werden
+  - Sie sollte über viele Jahre stabil laufen (Kerngeschäft der Firma) 
+  - Dies wird durch DDD + Onion gefördert
+- siehe auch [Link](https://youtu.be/saa6tSN0w8Q?t=707)
+
+### 5.6) Frontend
 - die UI wurde in diesem Dokument bewusst eher ausgeklammert, kurz und knapp:
 - Aufteilung
   - a) ein extra Frontend für alle Services
