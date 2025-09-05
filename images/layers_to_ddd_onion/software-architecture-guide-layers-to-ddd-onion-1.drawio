@@ -1,0 +1,66 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.1.2 Chrome/138.0.7204.243 Electron/37.4.0 Safari/537.36" version="28.1.2">
+  <diagram name="Seite-1" id="NrbdtOU8l5xmAe7ymhUr">
+    <mxGraphModel dx="1410" dy="1943" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="IrhoCygINPT1jZf2iXR--1" value="technical layers" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="50" y="-1160" width="730" height="570" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-1" value="/client" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=top;align=right;verticalAlign=bottom;strokeColor=#3333FF;" parent="1" vertex="1">
+          <mxGeometry x="524" y="-790" width="210" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-66" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="a6-sa-Pfjen3ggbp_8G2-2" target="a6-sa-Pfjen3ggbp_8G2-3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-2" value="/controller" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=top;align=left;verticalAlign=bottom;strokeColor=#3333FF;" parent="1" vertex="1">
+          <mxGeometry x="244" y="-1090" width="370" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-64" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="a6-sa-Pfjen3ggbp_8G2-3" target="a6-sa-Pfjen3ggbp_8G2-4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-3" value="/service" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=top;align=left;verticalAlign=bottom;strokeColor=#3333FF;" parent="1" vertex="1">
+          <mxGeometry x="244" y="-940" width="370" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-4" value="/database" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=top;align=left;verticalAlign=bottom;strokeColor=#3333FF;" parent="1" vertex="1">
+          <mxGeometry x="90" y="-790" width="384" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-5" value="AusleihRestController" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="444" y="-1060" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-6" value="BuchRestController" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="268" y="-1060" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-8" value="AusleihService" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="444" y="-910" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-9" value="BuchService" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="268" y="-910" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-12" value="BuchJpaRepository&lt;div&gt;Interface&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="118" y="-760" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-13" value="BuchJpaEntity" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="118" y="-700" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-16" value="AusleihJpaRepository&lt;div&gt;Interface&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="294" y="-760" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-17" value="AusleihJpaEntity" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="294" y="-700" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-19" value="BuchRestClient" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="554" y="-760" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-20" value="AusleihRestClient" style="rounded=0;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="554" y="-700" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a6-sa-Pfjen3ggbp_8G2-65" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="a6-sa-Pfjen3ggbp_8G2-3" target="a6-sa-Pfjen3ggbp_8G2-1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="645" y="-787" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

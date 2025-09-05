@@ -23,7 +23,7 @@
 
 ## 1) Fachliche Anforderungen sammeln und visualisieren
 
-![Bild](images/software-architecture-guide-step-1.drawio.png)
+![Bild](images/steps/software-architecture-guide-step-1.drawio.png)
 
 - Alle relevanten Personen zusammen bringen
   - Fachexperten, Techniker, Projektleitung, etc
@@ -49,7 +49,7 @@
 
 ## 2) Kontext-Übersicht erstellen
 
-![Bild](images/software-architecture-guide-step-2.drawio.png)
+![Bild](images/steps/software-architecture-guide-step-2.drawio.png)
 
 ## 2.1) Kontexte ermitteln
 - Die Domäne in Sub-Domänen und Bounded Contexts unterteilen
@@ -126,7 +126,7 @@
 
 ## 3) Technische Services und Module festlegen
 
-![Bild](images/software-architecture-guide-step-3.drawio.png)
+![Bild](images/steps/software-architecture-guide-step-3.drawio.png)
 
 ### 3.1) Modulith vs Microservices
 - aus den fachlichen Kontexten sollen technische Bausteine entstehen
@@ -187,7 +187,7 @@
 
 ## 4) Verteilte Prozesse abbilden und Datenfluss planen
 
-![Bild](images/software-architecture-guide-step-4.drawio.png)
+![Bild](images/steps/software-architecture-guide-step-4.drawio.png)
 
 ### 4.1) Verteilte Prozesse koordinieren
 - die Geschäftsprozesse sollen in der Technik abgebildet werden
@@ -378,49 +378,118 @@
 
 ## 5) Service aufbauen
 
-![Bild](images/software-architecture-guide-step-5.drawio.png)
+![Bild](images/steps/software-architecture-guide-step-5.drawio.png)
 
-### 5.1) Inneren Aufbau festlegen
-- ein fachliches Feature/Modul im Service auf oberer Ebene (Package by Feature, siehe auch [Link](https://www.youtube.com/watch?v=B1d95I7-zsw))
-- wird intern in technische Schichten/Ringe aufgeteilt (Package by Layer)
-- jede Ebene sollte lose gekoppelt sein zur anderen (Interfaces)
-- Die Beziehungen zwischen den Ebenen bzw Modulen kann zb Spring Modulith (ArcUnit) prüfen
-- Klassen in Java Packages möglichst unsichtbar halten für die Außenwelt (package private)
-- Varianten
-  - a) Ports/Adapter, Hexagonal, Onion, Clean-Arc
-    - innen liegt die fachliche Geschäftslogik, außen die technische Infrastruktur
-    - von außen nach innen gerichtete Abhängigkeiten, auch wenn der Aufruf nach außen geht
-    - siehe auch [Link](https://www.youtube.com/watch?v=JubdZIdLQ4M) bzw [Link](https://youtu.be/BFXuFb40P8k?t=2295)
-    - Beispiel + Code, siehe [Link](https://reflectoring.io/spring-hexagonal/)
-  - b) alt: Schichten (zb UI, Business, DB):
-    - von oben nach unten gerichtete Abhängigkeit
-    - betrachtet nicht weitere umgebende Komponenten
-- die Geschäftslogik (Kern) sollte möglichst frei von Technologien sein (wenig Spring)
-  - bei eingehenden Aufrufen (Inbound/Driving-Adapter) ist ein Interface optional
-  - ausgehende Aufrufe (Outbound/Driven-Adapter) sollten entkoppelt sein
-  - wenn das Interface (Port) im Business-Package liegt, dann dreht sich die Abhängigkeit
-  - bedeutet es gibt keinen direkten Bezug zur Technologie/Implementierung
-- das Framework (zb Spring) hilft bei der Umgebung
-  - API (in): zb @Controller, @XxxMapping, @XxxListener
-  - API (out): zb XxxTemplate, XxxClient
-  - DB: zb @Repository, @Entity, @Table, @Document
-- Aufteilung von Logik und Daten
-  - a) Transaction Script:
-    - Trennung von Logik und Daten/State (nicht klassisch objektorientiert)
-    - DB Entitäten haben nur Daten/State (Anemic Domain Model)
-    - alle Geschäftslogik liegt in Service-Klassen
-    - geeignet für einfache Prozesse bzw CRUD-Systeme
-    - kann irgendwann komplex werden (Service 1 -> Service 2 -> Service 3)
-  - b) Domain Model / Object Oriented Design
-    - Logik und Daten/State gemeinsam in einer Klasse (Rich Domain Model)
-    - evtl. 2 Entities verwenden, ein technisches und ein fachliches Objekt (Mapping!, [Link](https://youtu.be/VGhg6Tfxb60?t=1550))
-    - keine Setter nutzen, sondern stattdessen fachliche Methoden
-    - Services sind sehr klein und delegieren nur weiter an die Domain Objekte
-    - besser erweiterbar/verständlich in einer komplexen Umgebung
+### 5.1) Grundlegende Überlegungen
+- Der Service muss grundsätzlich im Kern fachliche Prozesse umsetzen, die der Kunde einfordert
+- Hinzu kommen außen herum technische Anbindungen, sodass der Kern seine Wirkung erziehen kann
+- Diese beiden Bereiche müssen in der Software passend abgebildet werden
+- Generell sollte der Aufbau der Packages und Klassen an die Gegebenheiten des Projekts angepasst sein
+- Ein einfaches Projekt mit wenig Fachlichkeit benötigt keinen besonderen Aufbau
+- Bei komplexen Domänen mit viel Fachlichkeit kann der Aufbau langfristig sehr entscheidend sein
+- Beispiele siehe: [Repo-Verzeichnisse](example_arc)
 
-### 5.2) Daten modellieren
+### 5.2) Innerer Aufbau der Packages
+
+![Bild](images/layers_to_ddd_onion/software-architecture-guide-layers-to-ddd-onion-1.drawio.png)
+
+Technische Schichten
+- Nachfolgend wird beispielhaft eine Bibliothek mit Büchern und Ausleihen zur Demonstration genutzt
+- Zu Beginn des Projekts wird oftmals eine technische Unterteilung vorgenommen
+- Die Fachlichkeit von Buch und Ausleihe liegt also in einem Package
+- Außerdem verlaufen die Abhängigkeiten von oben nach unten (enge Kopplung)
+- Das ist bei kleineren Projekten (zb CRUD-App) auch vollkommen in Ordnung
+- Es wird allerdings schwierig, schnell zu erkennen, welche Klassen es alles zu einem Bereich gibt (zb Buch)
+
+Transaction Script:
+- Trennung von Logik und Daten/State (nicht klassisch objektorientiert)
+- DB Entitäten sind primitiv (Anemic Domain Model)
+- Die ganze Geschäftslogik liegt in Service-Klassen
+- kann irgendwann komplex werden (Service 1 -> Service 2 -> Service 3)
+
+![Bild](images/layers_to_ddd_onion/software-architecture-guide-layers-to-ddd-onion-2.drawio.png)
+
+Domain Modules
+- Besser ist es daher, alle Klassen fachlich in Feature/Module aufzuteilen auf oberer Ebene 
+- Man sagt dazu auch Package by Feature (statt Package by Layer), siehe [Link](https://www.youtube.com/watch?v=B1d95I7-zsw)
+- Die Beziehungen zwischen den Modulen kann zb Spring Modulith (ArcUnit) prüfen
+- Dann liegen allerdings potenziell sehr viele Klassen in einem Ordner
+- Eine Möglichkeit wäre, auch hier wieder technische Unterordner einzuführen
+- Bei komplexen Domänen ist dies aber langfristig nicht zielführend
+- Daher wird ein Aufbau empfohlen, bei dem der fachliche Kern im Vordergrund steht und möglichst unabhängig von der Technik ist
+
+Dependency Inversion
+- Bedeutet, die Abhängigkeiten sollen von außen nach innen gerichtet sein, auch wenn der Aufruf nach außen geht
+- Die lose Kopplung erreicht man durch den Einsatz von Interfaces
+- Die Schnittstelle (Port) liegt dabei neben der Fachlichkeit, sodass sich die Abhängigkeit dreht
+- Es gibt also keinen direkten Bezug zur Technologie/Implementierung (Adapter)
+- Bei eingehenden Aufrufen (Inbound/Driving-Adapter) ist ein Interface optional
+
+Neuer Aufbau im Modul
+- Hier gibt es 3 sehr ähnliche Ansätze: Onion, Clean und hexagonale Architektur (Ports & Adapters)
+- Diese sind ideal, um die Grundideen von DDD umzusetzen
+- siehe auch [Link](https://www.youtube.com/watch?v=JubdZIdLQ4M) bzw [Link](https://youtu.be/BFXuFb40P8k?t=2295)
+- Beispiel + Code, siehe [Link](https://reflectoring.io/spring-hexagonal/)
+- Nachfolgend wird der Onion/Clean-Aufbau mit Ports & Adapters kombiniert
+- Rot: Infrastruktur, Orange: UseCases, Grün: der fachliche Kern
+- Es werden erstmal alle (alten) Klassen verschoben in die neue Struktur
+- Damit ändert sich zwar noch nichts am Zusammenspiel, aber die Grundlagen sind gelegt
+
+### 5.3) Zusammenspiel der Klassen
+
+![Bild](images/layers_to_ddd_onion/software-architecture-guide-layers-to-ddd-onion-3.drawio.png)
+
+Services auftrennen
+- Mit der Zeit können in einem Projekt sehr viele Service-Klassen entstehen
+- Denn es sollen fortlaufend neue Anforderungen vom PO umgesetzt werden
+- Es entsteht ein Service-Caos, also die Verantwortlichkeiten/Abhängigkeiten sind unklar
+- Als Lösung wird im Beispiel der BuchService aufgetrennt
+
+- UseCases einführen
+  - Logik zur Orchestrierung landet in UseCase-Klassen 
+  - Dafür ist ein extra Onion-Ring bzw Package vorgesehen
+
+- Domain Model / Object Oriented Design
+  - Fachliche Regeln (zb Validierung) werden in die Entity verschoben
+  - Die Entity hat also nicht mehr Getter/Setter, sondern fachliche Methoden
+  - Das Objekt kümmert sich selbstständig um einen gültigen Zustand, nicht der Service
+  - Logik und Daten/State liegen somit gemeinsam in einer Klasse (Rich Domain Model)
+  - Außerdem gibt es nach wie vor JPA-Annotation zur Verarbeitung in der Datenbank
+  - Dies wird in einem späteren Schritt gefixt
+
+- Domain Service bleibt übrig:
+  - Der anfängliche BuchService wird zum DomainService
+  - Es bleibt nur Logik zurück, die Entity-übergreifend ist und nicht orchestriert
+  - Evtl. braucht man die Service-Klasse auch gar nicht mehr
+
+![Bild](images/layers_to_ddd_onion/software-architecture-guide-layers-to-ddd-onion-4.drawio.png)
+
+API-Clients auftrennen
+- Problem: die UseCases (bzw die Domain) hängt direkt von der Technik ab
+- Lösung: Ein Interface dreht via Dependency Inversion die Abhängigkeit um
+- Wichtig: die fachliche Schnittstelle liegt nicht im Infrastruktur-Package!
+- Der Fachlichkeit ist somit egal, ob REST oder etwas anderes verwendet wird
+
+![Bild](images/layers_to_ddd_onion/software-architecture-guide-layers-to-ddd-onion-5.drawio.png)
+
+Persistenz auftrennen
+- Problem: in der Domain befindet sich nach wie vor Technik in Form von JPA
+- Lösung: auch für die Entity und das Repository fachliche Klassen/Schnittstellen einführen
+  - Entity
+    - Die Entity wird aufgetrennt in eine fachliche DomainEntity
+    - Alles mit Technik liegt in der JPAEntity
+    - Dazwischen muss ein Mapping der Entities erfolgen
+  - Repository
+    - Es wird zusätzlich ein fachliches DomainRepository-Interface angelegt
+    - Dies wird in der Infrastruktur von einer Klasse implementiert
+    - Darin wird dann das JPA-Repository und der Entity-Mapper verwendet
+- Wie zu sehen ist, entsteht ein relativ hoher Aufwand (weitere Klassen + Mapping)
+- Dieser Schritt sollte also gut überlegt sein
+- Folgendes Video beschreibt einen Weg ohne Split, siehe [Link](https://youtu.be/VGhg6Tfxb60?t=1550)
+
+### 5.4) Daten modellieren
 - es wird ein Modell der Wirklichkeit in der Software benötigt
-- bedeutet alle Objekte/Knoten aus den UseCases müssen abgebildet werden
+- bedeutet alle Objekte/Knoten aus den fachlichen Abläufen müssen abgebildet werden
 - zb Komponenten aus DDD Tactical Design nutzen, siehe auch [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA)
   - Entity
     - hat eine stabile Identität, auch wenn sich Eigenschaften ändern
@@ -470,7 +539,7 @@
   - falls nur ein BFF gewünscht ist bietet sich GraphQl an
 
 ## Gesamter Ablauf des Architektur-Leitfadens
-![Ablauf](images/software-architecture-guide-all-steps.drawio.png)
+![Ablauf](images/steps/software-architecture-guide-all-steps.drawio.png)
 
 ## Beispiel-Projekt
 
@@ -487,7 +556,7 @@
   - Anwendung wird nur tagsüber eingesetzt
 
 ### 2) Durchführung
-![Ablauf](images/software-architecture-guide-example.drawio.png)
+![Ablauf](images/example/software-architecture-guide-example.drawio.png)
 
 ### 3) Erklärung
 - aus dem Sequenzdiagramm ergibt sich
