@@ -547,7 +547,8 @@ Persistenz auftrennen
   - Die Fachlogik ist das Wertvollste der gesamten Architektur und muss geschützt werden
   - Sie sollte über viele Jahre stabil laufen (Kerngeschäft der Firma) 
   - Dies wird durch DDD + Onion gefördert
-- siehe auch [Link](https://youtu.be/saa6tSN0w8Q?t=707)
+  - siehe auch [Link](https://youtu.be/saa6tSN0w8Q?t=707)
+-  Beispiel-Repos: siehe [Link](https://github.com/maciejwalkowiak/implementing-ddd-with-spring-talk) und [Link](https://github.com/mattiacirioloWS/spring-io-conf-25)
 
 ### 5.6) Frontend
 - die UI wurde in diesem Dokument bewusst eher ausgeklammert, kurz und knapp:
