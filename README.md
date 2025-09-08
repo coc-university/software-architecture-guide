@@ -16,7 +16,7 @@
   - [1) Fachliche Anforderungen sammeln und visualisieren](#1-Fachliche-Anforderungen-sammeln-und-visualisieren)
   - [2) Kontext-Übersicht erstellen](#2-Kontext-Übersicht-erstellen)
   - [3) Technische Services und Module festlegen](#3-Technische-Services-und-Module-festlegen)
-  - [4) Verteilte Prozesse abbilden und Datenfluss planen](#4-Verteilte-Prozesse-abbilden-und-Datenfluss-planen)
+  - [4) Verteilte Prozesse_über APIs abbilden und Datenfluss planen](#4-Verteilte-Prozesse-über-APIs-abbilden-und-Datenfluss-planen)
   - [5) Service aufbauen](#5-Service-aufbauen)
 - Ein [Beispiel-Projekt](#Beispiel-Projekt) aus der Praxis macht die Konzepte greifbarer
 - Außerdem werden [Tipps für den Projektverlauf](#Projektverlauf-überwachen) gegeben
@@ -32,6 +32,10 @@
   - analog mit Post-it's oder digital (zB Miro)
 - gemeinsam mit Fachexperten die Domäne verstehen
 - eine gemeinsame Sprache (Ubiquitous Language) finden
+  - sie darf nicht mehrdeutig sein innerhalb eines Kontextes
+  - bedeutet die Personen einigen sich auf bestimmte Begriffe
+  - diese werden z.B. in einem Glossar festgehalten
+  - und möglichst auch im Code genutzt
 - Anforderungen sammeln
   - funktional: Fokus auf das "was" (Mehrwert für Kunde)
   - nicht-funktional: Fokus auf das "wie" (Qualitätsmerkmale), zb:
@@ -87,26 +91,28 @@
   - Verantwortung über Daten
     - wer ist der Besitzer der Entitäten im Gesamtprozess, wo gibt es Abhängigkeiten
     - wichtig für die spätere Verknüpfung der Kontexte
-- Kontexte in Kategorien einteilen
-  - Core: 
-    - Kern der Anwendung, zentrale Business-Prozesse
-    - bietet Wettbewerbsvorteil auf dem Markt
-    - hat eher hohe Komplexität und ändert sich häufiger 
-    - möglichst erfahrene Entwickler einsetzen
-    - früher umsetzen, evtl. höher skalieren
-  - Supporting: 
-    - unterstützt den Core durch Zusatz-Features 
-    - eher allgemeine Aufgaben und weniger Änderungen
-    - bietet kein Alleinstellungsmerkmal wie der Code
-    - juniorige Entwickler können hier wachsen
-    - wird erst später umgesetzt im Projektverlauf
-  - Generic: 
-    - kein Anwendungsbezug, aber ein notwendiges Übel
-    - löst teils komplexe, aber schon bekannte Probleme
-    - kann man dazukaufen oder outsourcen, zb. Nutzerverwaltung
-- siehe auch Strategic Design von DDD, bzw [Link](https://www.youtube.com/watch?v=ttIRNyoLKqE)
+- siehe auch Strategic Design von DDD
 
-## 2.2) Kontext-Beziehungen definieren
+## 2.2) Kontexte in Kategorien einteilen
+- Core: 
+  - Kern der Anwendung, zentrale Business-Prozesse
+  - bietet Wettbewerbsvorteil auf dem Markt
+  - hat eher hohe Komplexität und ändert sich häufiger 
+  - möglichst erfahrene Entwickler einsetzen
+  - früher umsetzen, evtl. höher skalieren
+- Supporting: 
+  - unterstützt den Core durch Zusatz-Features 
+  - eher allgemeine Aufgaben und weniger Änderungen
+  - bietet kein Alleinstellungsmerkmal wie der Code
+  - juniorige Entwickler können hier wachsen
+  - wird erst später umgesetzt im Projektverlauf
+- Generic: 
+  - kein Anwendungsbezug, aber ein notwendiges Übel
+  - löst teils komplexe, aber schon bekannte Probleme
+  - kann man dazukaufen oder outsourcen, zb. Nutzerverwaltung
+- siehe auch [Link](https://www.youtube.com/watch?v=ttIRNyoLKqE)
+
+## 2.3) Kontext-Beziehungen definieren
 - alle Beziehungen zwischen Kontexten identifizieren
 - Abhängigkeiten bzw Richtungen betrachten
   - Upstream, Downstream: liefernde und verbrauchende Kontexte
@@ -185,7 +191,7 @@
   - ein Wechsel im fortgeschrittenen Projektstadium wird aufwendig
   - ungewohnt "weiche" Kontext-Grenzen verführen zu Arc-Fehlern
 
-## 4) Verteilte Prozesse abbilden und Datenfluss planen
+## 4) Verteilte Prozesse über APIs abbilden und Datenfluss planen
 
 ![Bild](images/steps/software-architecture-guide-step-4.drawio.png)
 
@@ -389,7 +395,7 @@
 - Bei komplexen Domänen mit viel Fachlichkeit kann der Aufbau langfristig sehr entscheidend sein
 - Beispiele siehe: [Repo-Verzeichnisse](example_arc)
 
-### 5.2) Innerer Aufbau der Packages
+### 5.2) Aufbau der Packages
 
 ![Bild](images/layers_to_ddd_onion/software-architecture-guide-layers-to-ddd-onion-1.drawio.png)
 
