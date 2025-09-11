@@ -16,7 +16,7 @@
   - [1) Fachliche Anforderungen sammeln und visualisieren](#1-Fachliche-Anforderungen-sammeln-und-visualisieren)
   - [2) Kontext-Übersicht erstellen](#2-Kontext-Übersicht-erstellen)
   - [3) Technische Services und Module festlegen](#3-Technische-Services-und-Module-festlegen)
-  - [4) Verteilte Prozesse_über APIs abbilden und Datenfluss planen](#4-Verteilte-Prozesse-über-APIs-abbilden-und-Datenfluss-planen)
+  - [4) Verteilte Prozesse abbilden und Datenfluss planen](#4-Verteilte-Prozesse-abbilden-und-Datenfluss-planen)
   - [5) Service aufbauen](#5-Service-aufbauen)
 - Ein [Beispiel-Projekt](#Beispiel-Projekt) aus der Praxis macht die Konzepte greifbarer
 - Außerdem werden [Tipps für den Projektverlauf](#Projektverlauf-überwachen) gegeben
@@ -36,7 +36,7 @@
   - bedeutet die Personen einigen sich auf bestimmte Begriffe
   - diese werden z.B. in einem Glossar festgehalten
   - und möglichst auch im Code genutzt
-- Anforderungen sammeln
+- Anforderungen sammeln und auflisten
   - funktional: Fokus auf das "was" (Mehrwert für Kunde)
   - nicht-funktional: Fokus auf das "wie" (Qualitätsmerkmale), zb:
     - Performance (Antwortzeit, Durchsatz, Skalierbarkeit)
@@ -46,6 +46,7 @@
     - Benutzbarkeit (Barrierefreiheit, Fehlermeldungen)
     - siehe auch [Link](https://quality.arc42.org)
   - Praxis-Beispiel: siehe [Link](https://youtu.be/nJtEvdxvfNQ?t=702)
+- Domänen-Objekte (mit Namen & fachlichen Aktionen) ink. Zusammenhänge klären
 - Geschäftsprozesse bzw Use-Cases grafisch modellieren
   - Akteure/Objekte bilden Knoten im Diagramm (später Service oder Entity im Code)
   - Aktivitäten sind Verknüpfungen/Kanten über beschriftete Pfeile (später API oder Methode)
@@ -191,7 +192,7 @@
   - ein Wechsel im fortgeschrittenen Projektstadium wird aufwendig
   - ungewohnt "weiche" Kontext-Grenzen verführen zu Arc-Fehlern
 
-## 4) Verteilte Prozesse über APIs abbilden und Datenfluss planen
+## 4) Verteilte Prozesse abbilden und Datenfluss planen
 
 ![Bild](images/steps/software-architecture-guide-step-4.drawio.png)
 
@@ -266,19 +267,21 @@
 - API Technologie
   - synchron (Request/Response)
     - a) Java Methoden-Call in Modulith
-      - direkter interner Aufruf ohne Http (gegen Schnittstelle von Modul) 
-    - b) Plain Http
-      - Grundbausteine von Http: Url-Pfade, Http-Verben, Status-Codes, etc
-    - c) REST:
+      - direkter interner Aufruf ohne Http (gegen Schnittstelle von Modul)
+    - b) REST:
       - für einfache Service-to-Service Kommunikation
       - Basiert stark auf Plain Http und erweitert es
       - nutzt technische CRUD Operationen
-      - Zugriff auf Ressourcen über Url-Pfade (zb /books)
+      - Zugriff auf Ressourcen über Url-Pfade (zb /book)
       - nutzt alle Http-Verben und Status-Codes
       - Paging, Sortierung, Filterung möglich
       - es gibt 4 Level die beschreiben wie "RESTful" eine API tatsächlich ist
       - in der Praxis meist keine HATEOAS Links im Einsatz (höchstes Level)
       - möglich Erweiterung: Reactive Stream (Spring Webflux, non-blocking)
+    - c) RPC über Http
+        - Grundbausteine von Http: Url-Pfade, Http-Verben, Status-Codes, etc
+        - fachliche Endpunkte mit Verben, keine Ressourcen (zb. /register-book)
+        - nur POST für schreibende Aktionen (wie bei CQRS)
     - d) gRPC:
       - für sehr schnelle Service-to-Service Kommunikation
       - direkte Methodenaufrufe im anderen Service, keine Ressourcen
@@ -431,7 +434,7 @@ Dependency Inversion
 - Es gibt also keinen direkten Bezug zur Technologie/Implementierung (Adapter)
 - Bei eingehenden Aufrufen (Inbound/Driving-Adapter) ist ein Interface optional
 
-Neuer Aufbau im Modul
+Neuer Aufbau im Modul (DDD-Onion)
 - Hier gibt es 3 sehr ähnliche Ansätze: Onion, Clean und hexagonale Architektur (Ports & Adapters)
 - Diese sind ideal, um die Grundideen von DDD umzusetzen
 - siehe auch [Link](https://www.youtube.com/watch?v=JubdZIdLQ4M) bzw [Link](https://youtu.be/BFXuFb40P8k?t=2295)
@@ -455,7 +458,7 @@ Services auftrennen
   - Dafür ist ein extra Onion-Ring bzw Package vorgesehen
 - Domain Model / Object Oriented Design
   - Fachliche Regeln (zb Validierung) werden in die Entity verschoben
-  - Die Entity hat also nicht mehr Getter/Setter, sondern fachliche Methoden
+  - Die Entity hat also nicht mehr Setter, sondern fachliche Methoden
   - Das Objekt kümmert sich selbstständig um einen gültigen Zustand, nicht der Service
   - Logik und Daten/State liegen somit gemeinsam in einer Klasse (Rich Domain Model)
   - Außerdem gibt es nach wie vor JPA-Annotation zur Verarbeitung in der Datenbank
@@ -492,6 +495,37 @@ Persistenz auftrennen
 - Dieser Schritt sollte also gut überlegt sein
 - Folgendes Video beschreibt einen Weg ohne Split, siehe [Link](https://youtu.be/VGhg6Tfxb60?t=1550)
 
+### 5.4) Kombination der Packages & Klassen
+
+![Bild](images/layers_to_ddd_onion/software-architecture-guide-layers-to-ddd-onion-6.drawio.png)
+
+- Ein fachlicher Geschäftsprozess wird durch die DDD-Onion Architektur sauber aufgeteilt
+- Es gibt nicht mehr viele vermischte Service-Klassen mit enger Kopplung zur Technik
+- Stattdessen hat jede Ebene eine klare Verantwortung und fachliche Schnittstellen (Ports)
+- Die Abhängigkeiten verlaufen von außen nach innen (Fachlichkeit ohne Technik)
+- Ablauf eines Prozesses
+    - Ein UseCase wird vom Inbound-Adapter getriggert und orchestriert den groben Ablauf
+    - Er läd über das DomainRepository Entities aus der Datenbank
+    - Zusätzlich kann er über den Client-Port weitere Daten anfragen
+    - Beide Aufrufe kennen die konkrete Technik dahinter nicht, nur fachliche Objekte & Methoden
+    - Nun können Zustände verändert und wieder gespeichert werden
+    - Dabei weiß jede Entity selbstständig, welche Aktionen erlaubt sind
+    - Das Ergebnis meldet der UseCase an den Adapter zurück oder sendet ein Event
+- Vorteil Testing
+    - Die Fachlogik kann unabhängig/isoliert von der Technik getestet werden
+    - Z.B. kann hinter dem DomainRepository (Port) ein Mock via In-Memory-Liste stecken
+    - Der Unit-Test läuft somit sehr schnell durch
+    - Außerdem fokussiert er sich rein auf die Logik (bessere Wartung)
+- Vorteil Austauschbarkeit
+    - Ohne die Kopplung zur Technik kann man einfach APIs oder DBs austauschen
+    - Tendenziell ändert sich die Technik häufiger als die Fachlogik
+- Vorteil Langlebigkeit
+    - Die Fachlogik ist das Wertvollste der gesamten Architektur und muss geschützt werden
+    - Sie sollte über viele Jahre stabil laufen (Kerngeschäft der Firma)
+    - Dies wird durch DDD + Onion gefördert
+    - siehe auch [Link](https://youtu.be/saa6tSN0w8Q?t=707)
+-  Beispiel-Repos: siehe [Link](https://github.com/maciejwalkowiak/implementing-ddd-with-spring-talk) und [Link](https://github.com/mattiacirioloWS/spring-io-conf-25)
+
 ### 5.4) Daten modellieren
 - Es wird ein Modell der Wirklichkeit in der Software benötigt
 - Bedeutet, alle Objekte/Knoten aus den fachlichen Abläufen müssen abgebildet werden
@@ -518,37 +552,6 @@ Persistenz auftrennen
     - optional: kann direkt in die Entity-Tabelle eingebettet werden (keine extra Tabelle)
     - @Embeddable Klasse via @Embedded in @Entity nutzen
   - Aggregate: Zugriff via @Repository-Interface (extends JpaRepository<Bestellung, Long>)
-
-### 5.5) Zusammenfassung
-
-![Bild](images/layers_to_ddd_onion/software-architecture-guide-layers-to-ddd-onion-6.drawio.png)
-
-- Ein fachlicher Geschäftsprozess wird durch die DDD-Onion Architektur sauber aufgeteilt
-- Es gibt nicht mehr viele vermischte Service-Klassen mit enger Kopplung zur Technik
-- Stattdessen hat jede Ebene eine klare Verantwortung und fachliche Schnittstellen (Ports)
-- Die Abhängigkeiten verlaufen von außen nach innen (Fachlichkeit ohne Technik) 
-- Ablauf eines Prozesses
-  - Ein UseCase wird vom Inbound-Adapter getriggert und orchestriert den groben Ablauf
-  - Er läd über das DomainRepository ein Aggregat an Entities und Value Objects
-  - Zusätzlich kann er über den Client-Port weitere Daten anfragen
-  - Beide Aufrufe kennen die konkrete Technik dahinter nicht, nur fachliche Objekte & Methoden
-  - Nun können Zustände verändert und wieder gespeichert werden
-  - Dabei weiß jede Entity selbstständig, welche Aktionen erlaubt sind
-  - Das Ergebnis meldet der UseCase an den Adapter zurück oder sendet ein Event
-- Vorteil Testing
-  - Die Fachlogik kann unabhängig/isoliert von der Technik getestet werden
-  - Z.B. kann hinter dem DomainRepository (Port) ein Mock via In-Memory-Liste stecken
-  - Der Unit-Test läuft somit sehr schnell durch
-  - Außerdem fokussiert er sich rein auf die Logik (bessere Wartung)
-- Vorteil Austauschbarkeit
-  - Ohne die Kopplung zur Technik kann man einfach APIs oder DBs austauschen
-  - Tendenziell ändert sich die Technik häufiger als die Fachlogik
-- Vorteil Langlebigkeit
-  - Die Fachlogik ist das Wertvollste der gesamten Architektur und muss geschützt werden
-  - Sie sollte über viele Jahre stabil laufen (Kerngeschäft der Firma) 
-  - Dies wird durch DDD + Onion gefördert
-  - siehe auch [Link](https://youtu.be/saa6tSN0w8Q?t=707)
--  Beispiel-Repos: siehe [Link](https://github.com/maciejwalkowiak/implementing-ddd-with-spring-talk) und [Link](https://github.com/mattiacirioloWS/spring-io-conf-25)
 
 ### 5.6) Frontend
 - die UI wurde in diesem Dokument bewusst eher ausgeklammert, kurz und knapp:
