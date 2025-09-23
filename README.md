@@ -271,17 +271,22 @@
     - b) REST:
       - für einfache Service-to-Service Kommunikation
       - Basiert stark auf Plain Http und erweitert es
-      - nutzt technische CRUD Operationen
+      - nutzt technische CRUD Operationen (wie SQL über die API)
       - Zugriff auf Ressourcen über Url-Pfade (zb /book)
       - nutzt alle Http-Verben und Status-Codes
       - Paging, Sortierung, Filterung möglich
       - es gibt 4 Level die beschreiben wie "RESTful" eine API tatsächlich ist
       - in der Praxis meist keine HATEOAS Links im Einsatz (höchstes Level)
       - möglich Erweiterung: Reactive Stream (Spring Webflux, non-blocking)
-    - c) RPC über Http
-        - Grundbausteine von Http: Url-Pfade, Http-Verben, Status-Codes, etc
-        - fachliche Endpunkte mit Verben, keine Ressourcen (zb. /register-book)
-        - nur POST für schreibende Aktionen (wie bei CQRS)
+    - c) REST mit Action-Endpunkten und custom Methoden:
+      - fachliche Endpunkte mit Verben statt Nomen am Ende
+      - zb. books/1/register, oder books/1/report-missing-page
+      - nur POST für schreibende Aktionen, wie bei CQRS
+      - pragmatisches REST um CRUD zu vermeiden
+      - die domain-driven API enthält nun die Ubiquitous Language
+      - und orientiert sich eher an Prozessen statt Daten (RPC-Style)
+      - siehe auch Videos: [Link](https://youtu.be/93UK4gwV41c?t=133) und [Link](https://youtu.be/6XO6vSiioWE?t=67)
+      - und Webseite: [Link](https://medium.com/@bvsahane89/custom-methods-in-rest-api-endpoints-approaches-examples-and-best-practices-284ecd23e030)
     - d) gRPC:
       - für sehr schnelle Service-to-Service Kommunikation
       - direkte Methodenaufrufe im anderen Service, keine Ressourcen
@@ -308,9 +313,9 @@
       - Pufferung von Messages in Broker (gute Skalierung bei Last)
       - bei einem Ausfall können Events zwischengespeichert und später verarbeitet werden
 - Zusammenspiel aus Konzept und Technologie
-  - a) CQRS/Events + Plain Http
+  - a) CQRS + REST mit Action-Endpunkten
     - Commands und Queries synchron via Request/Response übertragen
-    - ebenso für Events möglich
+    - gegen einen fachlichen POST-Endpunkt mit Action-Methode
   - b) CQRS/Events + Messaging
     - Commands und Events asynchron via Message (-Broker) übertragen
     - eine Message kann an mehrere Services zugestellt werden
