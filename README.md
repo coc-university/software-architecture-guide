@@ -8,7 +8,7 @@
   - beginnend bei der Fachlichkeit, gefolgt von der technischen Umsetzung
   - es soll dabei helfen den passenden Aufbau für ein Projekt zu finden
   - generell spielen unabhängige Kontexte und Kopplung/Kohäsion eine große Rolle
-  - es sind viele Konzepte von Domain Driven Design (DDD) enthalten
+  - es sind viele Konzepte von [Domain Driven Design (DDD)](https://de.wikipedia.org/wiki/Domain-driven_Design) enthalten
   - denn die fachlichen Abläufe sollten in der Technik abgebildet werden
   - bei den Backend-Technologien wird Java & Spring Boot beispielhaft referenziert
   - der Frontend-Bereich wird eher ausgeklammert
@@ -18,8 +18,9 @@
   - [3) Technische Services und Module festlegen](#3-Technische-Services-und-Module-festlegen)
   - [4) Verteilte Prozesse abbilden und Datenfluss planen](#4-Verteilte-Prozesse-abbilden-und-Datenfluss-planen)
   - [5) Service aufbauen](#5-Service-aufbauen)
-- Ein [Beispiel-Projekt](#Beispiel-Projekt) aus der Praxis macht die Konzepte greifbarer
-- Außerdem werden [Tipps für den Projektverlauf](#Projektverlauf-überwachen) gegeben
+- Außerdem
+  - Ein [Beispiel-Projekt](#Beispiel-Projekt) aus der Praxis macht die Konzepte greifbarer
+  - Zusätzlich werden [Tipps für den Projektverlauf](#Projektverlauf-überwachen) gegeben
 
 ## 1) Fachliche Anforderungen sammeln und visualisieren
 
@@ -27,17 +28,19 @@
 
 - Alle relevanten Personen zusammen bringen
   - Fachexperten, Techniker, Projektleitung, etc
-  - Meeting-Formate wie Event Storming oder Domain Storytelling
-  - siehe auch [Link](https://www.youtube.com/watch?v=H1hzIFACDHE) bzw [Link](https://www.youtube.com/watch?v=EaKWQ1rsaqQ) 
-  - analog mit Post-it's oder digital (zB Miro)
+  - am besten persönlich vor Ort
 - gemeinsam mit Fachexperten die Domäne verstehen
 - eine gemeinsame Sprache (Ubiquitous Language) finden
   - sie darf nicht mehrdeutig sein innerhalb eines Kontextes
   - bedeutet die Personen einigen sich auf bestimmte Begriffe
   - diese werden z.B. in einem Glossar festgehalten
-  - und möglichst auch im Code genutzt
+  - und später möglichst auch im Code verwendet (Klassen, Entities, etc)
+  - bzw. über fachliche Gherkin-Tests ausgedrückt
 - Anforderungen sammeln und auflisten
   - funktional: Fokus auf das "was" (Mehrwert für Kunde)
+    - Meeting-Formate wie Event Storming oder Domain Storytelling
+    - siehe auch [Link](https://www.youtube.com/watch?v=H1hzIFACDHE) bzw [Link](https://www.youtube.com/watch?v=EaKWQ1rsaqQ)
+    - analog mit Post-it's oder digital (zB Miro)
   - nicht-funktional: Fokus auf das "wie" (Qualitätsmerkmale), zb:
     - Performance (Antwortzeit, Durchsatz, Skalierbarkeit)
     - Zuverlässigkeit (Fehlertoleranz, Verfügbarkeit)
