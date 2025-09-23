@@ -389,6 +389,7 @@
   - Tabellen normalisieren, um Redundanzen zu minimieren (nicht unbedingt bei noSQL)
   - große verschachtelte Graphen vermeiden, Konsistenzgrenzen einführen
   - wenn nötig mit IDs (Fremdschlüssel) arbeiten statt direkt zu referenzieren
+  - siehe auch Abschnitt zu DDD-Aggregates unter "Domain modellieren"
 
 ## 5) Service aufbauen
 
@@ -529,34 +530,51 @@ Persistenz auftrennen
     - Sie sollte über viele Jahre stabil laufen (Kerngeschäft der Firma)
     - Dies wird durch DDD + Onion gefördert
     - siehe auch [Link](https://youtu.be/saa6tSN0w8Q?t=707)
--  Beispiel-Repos: siehe [Link](https://github.com/maciejwalkowiak/implementing-ddd-with-spring-talk) und [Link](https://github.com/mattiacirioloWS/spring-io-conf-25)
+-  Beispiel-Repos: siehe [Link](https://github.com/maciejwalkowiak/implementing-ddd-with-spring-talk) und 
+   [Link](https://github.com/mattiacirioloWS/spring-io-conf-25)
 
-### 5.4) Daten modellieren
+### 5.5) Domain modellieren
+
+![Bild](images/layers_to_ddd_onion/software-architecture-guide-layers-to-ddd-onion-7.drawio.png)
+
 - Es wird ein Modell der Wirklichkeit in der Software benötigt
 - Bedeutet, alle Objekte/Knoten aus den fachlichen Abläufen müssen abgebildet werden
 - zb Komponenten aus DDD Tactical Design nutzen, siehe auch [Link](https://www.youtube.com/watch?v=xFl-QQZJFTA)
+  - generell
+    - Rich Domain Model verwenden, also fachliche Methoden statt primitive Getter/Setter
+    - Regeln (wie zb Validierung) befinden sich direkt im Objekt
+    - ebenso Business-Logik die den Zustand verändert
   - Entity
-    - hat eine stabile Identität, auch wenn sich Eigenschaften ändern
+    - hat eine stabile Identität, also unabhängig von Eigenschaften 
+    - ist veränderlich, es können und sollen sich Eigenschaften ändern 
+    - DB: extra Tabelle in der Datenbank
     - zb "Bestellung"
   - Value Object
-    - ohne eigene Identität, also zählt nur durch seine Werte
+    - lebt nur eingebettet als Teil einer Entity
+    - ohne eigene Identität, zählt also nur durch die Kombination seiner Werte
     - ist unveränderlich (immutable), muss komplett ersetzt werden durch neue Instanz
     - ermöglicht Wiederverwendung und Verhinderung von Nebeneffekten
-    - zb "Adresse" oder "Geldbetrag"
+    - bringt mehr Klarheit, macht also die Intension von Objekten deutlicher
+    - integriert die Fachsprache tiefer im Code und reduziert Primitive-Obsession
+    - DB: kann in die Entity-Tabelle eingebettet werden
+    - Spring: Umsetzung via Record, Integration durch @Embeddable
+    - zb "Adresse", "Geldbetrag", "Telefonnummer", "Status"
   - Aggregate
     - eine Gruppe zusammengehöriger Objekte, die konsistent als Ganzes verwaltet werden
+    - ist nur ein abstraktes Konzept, keine extra Komponente
     - also Entities + Value Objects, zb "Bestellung" + "Adresse" + "Geldbetrag"
     - eine Entity fungiert als Aggregate Root (Abruf via Repository)
     - der Zugriff auf Elemente des Aggregates erfolgt ausschließlich via Root-Entity
     - bedeutet es kann nicht direkt ein Sub-Element von außen geändert werden
     - im Beispiel ist das Ersetzen der "Adresse" ohne die "Bestellung" nicht möglich
-- falls man das Daten-Modell direkt mit Technologien (Spring-JPA) mischt:
-  - Entity: klassische @Entity mit @Id und Properties
-  - Value Object:
-    - private + final Properties und keine Setter-Methoden
-    - optional: kann direkt in die Entity-Tabelle eingebettet werden (keine extra Tabelle)
-    - @Embeddable Klasse via @Embedded in @Entity nutzen
-  - Aggregate: Zugriff via @Repository-Interface (extends JpaRepository<Bestellung, Long>)
+    - Aggregates sollten möglichst klein gehalten werden (überschaubare Graphen)
+    - andere Aggregates über IDs referenzieren
+  - Beispiele
+    - [Book](https://github.com/maciejwalkowiak/implementing-ddd-with-spring-talk/blob/main/src/main/java/library/catalog/domain/Book.java) (Root-Entity) + 
+      [ISBN](https://github.com/maciejwalkowiak/implementing-ddd-with-spring-talk/blob/main/src/main/java/library/catalog/domain/Isbn.java) (Value Object)
+    - [Order](https://github.com/mattiacirioloWS/spring-io-conf-25/blob/main/src/main/java/net/springio/conference/order/domain/Order.java) (Root-Entity) +
+      [OrderStatus](https://github.com/mattiacirioloWS/spring-io-conf-25/blob/main/src/main/java/net/springio/conference/order/domain/OrderStatus.java) (Value Object) +
+      [OrderItem](https://github.com/mattiacirioloWS/spring-io-conf-25/blob/main/src/main/java/net/springio/conference/order/domain/OrderItem.java) (Sub-Entity)
 
 ### 5.6) Frontend
 - die UI wurde in diesem Dokument bewusst eher ausgeklammert, kurz und knapp:
