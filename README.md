@@ -1,4 +1,4 @@
-# software-architecture-guide
+# domain-driven software-architecture-guide
 
 ## Intro
 
@@ -9,7 +9,7 @@
   - es soll dabei helfen den passenden Aufbau für ein Projekt zu finden
   - generell spielen unabhängige Kontexte und Kopplung/Kohäsion eine große Rolle
   - es sind viele Konzepte von [Domain Driven Design (DDD)](https://de.wikipedia.org/wiki/Domain-driven_Design) enthalten
-  - denn die fachlichen Abläufe sollten in der Technik abgebildet werden
+  - denn die fachlichen Abläufe & Zusammenhänge sollten in der Technik abgebildet werden
   - bei den Backend-Technologien wird Java & Spring Boot beispielhaft referenziert
   - der Frontend-Bereich wird eher ausgeklammert
 - Abschnitte
@@ -18,6 +18,9 @@
   - [3) Technische Services und Module festlegen](#3-Technische-Services-und-Module-festlegen)
   - [4) Verteilte Prozesse abbilden und Datenfluss planen](#4-Verteilte-Prozesse-abbilden-und-Datenfluss-planen)
   - [5) Service aufbauen](#5-Service-aufbauen)
+- Zusammenfassung
+  - [Gesamter Ablauf](#Gesamter-Ablauf-des-Architektur-Leitfadens)
+  - [Wo beeinflusst DDD die Architektur?](#Wo-beeinflusst-DDD-die-Architektur)
 - Außerdem
   - Ein [Beispiel-Projekt](#Beispiel-Projekt) aus der Praxis macht die Konzepte greifbarer
   - Zusätzlich werden [Tipps für den Projektverlauf](#Projektverlauf-überwachen) gegeben
@@ -146,6 +149,7 @@
   - a) ein Service mit mehreren fachlichen Modulen (modular Monolith = Modulith)
     - über Java Packages oder via Maven-Module
     - bietet zum Projektstart ein einfaches Setup und geringe Kosten
+    - siehe auch [spring-modulith-template](https://github.com/coc-university/spring-modulith-template)
   - b) mehrere separate Microservices
     - eigenständig laufende Prozesse, optional auch eigene Git-Repo's
     - initial evtl zu komplex, aber kann im späteren Projektverlauf Vorteile bringen
@@ -166,6 +170,7 @@
 | Unabhängige Datenmodelle der Kontexte (einfach umsetzbar) | nein      | ja            |
 | Technologie-Vielfalt                                      | nein      | ja            |
 | Übergreifende Suche/Refactorings einfach möglich          | ja        | nein          |
+| Einfache E2E-Tests der kontext-übergreifenden Prozesse    | ja        | nein          |
 | Falschen Kontext-Schnitt einfach beheben                  | ja        | nein          |
 
 ### 3.2) Von Modulith zu Microservices wechseln im Projektverlauf
@@ -563,7 +568,8 @@ Persistenz auftrennen
     - Spring: Umsetzung via Record, Integration durch @Embeddable
     - zb "Adresse", "Geldbetrag", "Telefonnummer", "Status"
   - Aggregate
-    - eine Gruppe zusammengehöriger Objekte, die konsistent als Ganzes verwaltet werden
+    - eine Gruppe zusammengehöriger Objekte, die als Ganzes verwaltet werden
+    - es bildet eine transaktionale Grenze, stellt also Konsistenz sicher
     - ist nur ein abstraktes Konzept, keine extra Komponente
     - also Entities + Value Objects, zb "Bestellung" + "Adresse" + "Geldbetrag"
     - eine Entity fungiert als Aggregate Root (Abruf via Repository)
@@ -605,6 +611,34 @@ Persistenz auftrennen
 
 ## Gesamter Ablauf des Architektur-Leitfadens
 ![Ablauf](images/steps/software-architecture-guide-all-steps.drawio.png)
+
+## Wo beeinflusst DDD die Architektur?
+
+### 1) Anforderungen
+
+- die Fachlichkeit verstehen, statt in Technik zu denken
+- eine Ubiquitous Language aufbauen
+
+### 2) Kontexte
+
+- Sub-Domänen erkennen
+- Bounded Contexts erstellen
+- Beziehungen definieren
+
+### 3) Service-Schnitt
+
+- die Bounded Contexts & Beziehungen beeinflussen die Services
+
+### 4) Prozesse & Datenfluss
+
+- APIs sollten fachlich designt werden (zb CQRS)
+- die Datenbank-Tabellen orientieren sich an Aggregates
+
+### 5) Service-Aufbau
+
+- die Fachlichkeit wird in den Mittelpunkt gestellt
+- die Onion-Architektur mit Ports & Adapters trennen Fachlichkeit und Technik
+- Entities, Value Objects & Aggregates modellieren die Domäne
 
 ## Beispiel-Projekt
 
