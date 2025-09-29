@@ -385,7 +385,7 @@
     - Postgres, MySql, etc
     - Spring Data JPA / Hibernate: komplex, mit Cache/Persistence-Context und Dirty Checking
     - oder Data JDBC: einfacher, ohne Caching, führt SQL sofort aus, orientiert an DDD Aggregates
-    - siehe auch [Link](https://www.youtube.com/watch?v=AnIouYdwxo0)
+    - siehe auch [spring-data-guide](https://github.com/coc-university/spring-data-guide)
   - b) NoSQL: unstrukturierte Daten, einfache Abfragen, gute Skalierung
     - zb MongoDb via Spring Data MongoDB
     - speichern von Objekten ohne extra Entity-Klasse & Repository möglich
