@@ -405,8 +405,9 @@
 
 ### 5.1) Grundlegende Überlegungen
 - Der Service muss grundsätzlich im Kern fachliche Prozesse umsetzen, die der Kunde einfordert
+- Die Prozesse nutzen dazu das Domänen-Modell, was die Objekte der echten Welt nachbildet
 - Hinzu kommen außen herum technische Anbindungen, sodass der Kern seine Wirkung erziehen kann
-- Diese beiden Bereiche müssen in der Software passend abgebildet werden
+- Diese beiden Bereiche (Fachlichkeit & Technik) müssen in der Software passend abgebildet werden
 - Generell sollte der Aufbau der Packages und Klassen an die Gegebenheiten des Projekts angepasst sein
 - Ein einfaches Projekt mit wenig Fachlichkeit benötigt keinen besonderen Aufbau
 - Bei komplexen Domänen mit viel Fachlichkeit kann der Aufbau langfristig sehr entscheidend sein
