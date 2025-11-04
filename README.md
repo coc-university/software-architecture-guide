@@ -808,3 +808,253 @@ Persistenz auftrennen
   - leichtgewichtiges Hilfsmittel für frühe Projektphasen oder Reviews
   - kein Ersatz zu arc42, sondern eine Ergänzung 
   - Vorlagen: zb [arc42-Canvas](https://canvas.arc42.org), [software-component-canvas](https://github.com/feststelltaste/software-component-canvas)
+
+## Buch: "Effektive Softwarearchitekturen"
+
+### 1) Einleitung
+
+1.1) der Softwarearchitekt
+
+- stellt sicher, dass Anforderungen umsetzbar sind und auch umgesetzt werden
+- denkt langfristig, um die Nachhaltigkeit der Software zu sichern
+- achtet auf Konsistenz, also einem einheitlichen Stil
+
+1.2) Effektiv, agil, pragmatisch
+
+- flexibles Vorgeben bei 
+  - Requirements-Engineering (Änderung der Anforderungen)
+  - Grundgerüst der Architektur muss Umsetzung ermöglichen
+  - Dokumentation muss sich an spezifischen Projektbedürfnissen orientieren
+
+- Mitdenken statt „Dienst nach Vorschrift“ und Dogma
+  - offen für Änderungen statt Festhalten an alten Plänen
+  - ergebnisorientiert als prozessorientiert
+  - miteinander reden statt gegeneinander schreiben
+  - Vertrauen statt Kontrolle
+
+### 2) Grundlagen & Aufgaben
+
+2.1.a) Warum Softwarearchitektur?
+
+- funktionale Anforderungen der Stakeholder erreichen
+- wichtige Qualitätsanforderungen (NFAs) sicher stellen
+- Konsistenz: ähnliche Aufgaben ähnlich lösen
+- grundlegende Entscheidungen verständlich machen
+
+2.1.b) Was ist Softwarearchitektur?
+
+- System, Komponenten, Beziehungen, Umgebung
+- Komponenten + Beziehungen = Strukturen
+- Prinzipien/Konzepte: Regeln & Patterns für mehrere Teile des Systems
+
+2.2) Grundlagen für Architekturentscheidungen
+
+- funktionale Anforderungen & Qualitätsanforderungen
+- Vorgaben zur Technologie
+- Erfahrung und Größe des Teams
+- Risiken für Entwicklung und Betrieb
+- Geld und Zeit
+- organisatorische Randbedingungen
+- gesetzliche Vorgaben
+
+2.3 Aufgaben von Softwarearchitekten
+
+- Anforderungen klären
+- Make-or-buy entscheiden
+- Strukturen & Querschnittskonzepte entwerfen
+- Architektur kommunizieren & dokumentieren
+- die Umsetzung begleiten
+- Architekturen analysieren & bewerten
+
+2.4) Wer übernimmt die Rolle des Softwarearchitekten?
+
+- Monarchie: eine Person aus einer anderen Abteilung entscheidet alles
+- Architekt im Team: keine hierarchische Trennung, sondern Teil des Projektteams
+- Architekturagent: Mehrere Personen des Teams teilen die Architekturarbeit untereinander auf
+- Demokratie: Das gesamte Team stimmt sich ab
+
+2.5a) Architekturen entstehen (meist) iterativ
+
+- die tatsächliche Lösung sieht immer etwas anders aus, als zu Beginn gedacht
+- ähnelt der Verfolgung von beweglichen Zielen
+- die Zwischenlösungen und das bewegliche Ziel annähern sich im Verlauf an
+
+2.5b) Wie Architekturen nicht entstehen sollten
+
+- im Architekturkomitee bzw Elfenbeinturm, entkoppelt von der Realität
+- nur auf bunten Marketing-Folien
+- nach dem Motto: "Wir machen jetzt Technologie X"
+
+### 3) Anforderungen klären
+
+3.1) Kernaufgabe oder Ziel des Systems?
+
+- in zwei bis drei Sätzen formuliert
+- positiv und mit Originalbegriffen der Fachdomäne
+- kurz & prägnant, nicht vollständig
+- evtl. von PO übernehmen bzw abstimmen
+- Warum gibt es dieses System?
+
+3.2) Relevante Stakeholder ermitteln
+
+- Erwartungshaltung klären
+- welche Artefakte oder Dokumente liefern?
+- Stakeholder in Arc-Doku aufnehmen
+
+3.3) Welche Kategorie von Systemen gibt es?
+
+- Interaktive Systeme, Online-Systeme: Anwender, Geschäftsprozesse, Daten, UIs
+- Mobile Systeme: eine Variante von Online-Systemen, für Smartphones und Tablets
+- Entscheidungsunterstützungssysteme: arbeiten lesend mit Kopien von Daten
+- Hintergrundsysteme (Offline-Systeme, Batch-Systeme): Datenmanipulation, Vor- oder Nachverarbeitung
+- Eingebettete Systeme (embedded systems): eng verzahnt mit spezieller Hardware, zb Waschmaschine
+- Systeme mit Echtzeitanforderungen (real-time systems): zb Produktionssteuerung, Herzschrittmacher
+- KI-Systeme: zb ChatBots
+
+3.4) Fachdomäne klären
+
+- wesentliche Begriffe aus der Domäne sammeln (DDD: Ubiquitous Language)
+- Abläufe innerhalb der Domäne klären (zb Event Storming oder Domain Storytelling)
+- oder klassische Anforderungsanalyse (Requirements Engineering) mit Verfeinerungsebenen
+
+3.5) Qualitätsanforderungen klären
+
+- verschiedene Stakeholder haben unterschiedliche Qualitätsbegriffe und -anforderungen
+- manche Begriffe im Umfeld Qualität sind hochgradig interpretierbar
+- Qualitätsszenarien: konkrete Ausprägungen für Qualitätseigenschaften 
+- Bestandteile von Szenarien: Ereignisse (Stimuli) → Antwort (Reaktion) → Metrik/Messwert
+- Szenarien dienen als Grundlage für 
+  - "Quality Driven Architecture" (Kapitel 4.2.2)
+  - Architekturanalyse und -bewertung (Kapitel 6)
+
+3.6 Externe Nachbarsysteme
+
+- wie sehen die Schnittstellen aus (Stabilität, sync oder async, Änderungsmöglichkeiten, etc)
+- Diagramm + Tabelle zur Erläuterung 
+
+3.7) Einflussfaktoren und Randbedingungen ermitteln
+
+- organisatorische, firmen-politische und technische Faktoren
+- politische und organisatorische Faktoren werden leicht unterschätzt
+
+### 4) Entwurf
+
+4.1.1) Grundlagen
+
+- einfachheit gewinnt, da leichter wartbar (Keep It Small and Simple, KISS)
+- entscheiden Sie spezifisch, kein Patentrezept (No Silver Bullet)
+- Voraussetzungen, Annahmen und Entscheidungen explizit machen (Interpretationen vermeiden)
+- erwarte Änderungen (Anforderungen, Technologien, etc)
+- erwarte Fehler (Murphys Gesetz: Alles was schiefgehen kann wird schiefgehen)
+
+4.1.2) Prinzipien
+
+- Lose Kopplung, fördert Einfachheit, Flexibilität und Verständlichkeit
+  - Unterscheidung: statische & dynamische (zur Laufzeit) Kopplung  
+  - ausgehende und eingehende Kopplung/Abhängigkeiten
+  - Kopplung durch: Aufruf, Benachrichtigung, Datenstrukturen, Zeit, etc
+- Hohe Kohäsion (innerer Zusammenhalt)
+- Trennung von Verantwortlichkeiten, Separation of Concern (Kopplung und Kohäsion)
+- Modularisierung: Blackbox mit Verantwortlichkeiten und Schnittstellen
+- Kapselung/Geheimnisprinzip/Information Hiding: verbergen vom Innenleben
+- Hohe Konsistenz: ähnliche Probleme ähnlich lösen, wenige unterschiedliche Lösungsansätze
+- keine zyklischen Abhängigkeiten zwischen Modulen
+- SOLID-Prinzipien
+  - Single Responsibility, siehe Trennung von Verantwortlichkeiten
+  - Open-Close: Komponenten erweitern können, ohne bestehenden Code zu modifizieren
+  - Liskov Substitution: Unterklassen müssen für Oberklassen eingesetzt werden können (Vererbung)
+  - Interface Segregation: Mehrere spezifische Schnittstellen statt eine große/universelle
+  - Dependency Inversion Principle: Abhängigkeit von Abstraktionen (zb Schnittstellen)
+- Dependency Injection: zu einer Schnittstelle zur Laufzeit eine Instanz beschaffen
+
+4.1.3) Heuristiken / Fastregeln
+
+- Recherchiere gründlich: zb Beispiele für erfolgreiche/gescheiterte Lösungen
+- Verfeinere schrittweise: Das Problem in kleinere Teile zerlegen
+- Trial-and-Error: ausprobieren von Piloten bzw Prototypen
+- Generalisiere: Verallgemeinerungen von Spezialfällen abstrahieren
+- Spezialisiere: manchmal genügt die Lösung eines Spezialfalls
+- wechsle die Perspektive (zb Architektursichten aus Kapitel 5)
+- achte auf Schnittstellen, sie sind die Basis für die Kommunikation
+- kenne die Risiken: eher mit schweren Teilen starten, um Probleme festzustellen
+- Geselligkeit von Fehlern: Fehler treten meist gehäuft auf, wo es schon Fehler gibt
+
+4.2 Entwurfsmethoden
+
+- Domain-Driven Design 
+  - die Sprache der Fachdomäne modellieren (Ubiquitous Language)
+  - Strategisches Design: Clustern im Großen (Bounded Context)
+  - Taktisches Design: Strukturieren im Kleinen (Entities, VO, Aggregates, etc)
+- Quality-Driven
+  - Planen-Handeln-Prüfen-Zyklus von Qualitätsanforderungen
+  - Qualitätsanforderungen heraus- bzw nacharbeiten (PO tut sich schwer damit)
+  - mithilfe von Qualitätsszenarien konkretisieren und Qualitätsbaum erstellen
+  - Prioritäten bzw Reihenfolge festlegen
+  - Sammeln und analysieren von Maßnahmenvorschlägen
+  - Achtung: Maßnahmen können auf mehrere Qualitäten Einfluss nehmen
+  - Konsequenzanalyse durchführen vor der Umsetzung
+- Top-down und Bottom-up
+  - Top-down/Vogelperspektive: Schnittstellen & übergreifende Themen
+  - Bottom-up: Detailprobleme lösen, später in Gesamtentwurf einbringen
+- Sichten der Softwarearchitektur
+  - Kontextabgrenzung: System als Blackbox, Nachbarsysteme, Stakeholder, Infra
+  - Bausteinsicht: System als Whitebox, interne statische Strukturen (Top-down)
+  - Laufzeitsicht: Zusammenspiel der Bausteine zur Laufzeit
+  - Verteilungssicht (Infrastruktursicht): Umgebung des Systems (Hardwarekomponenten)
+
+4.3 Schnittstellen entwerfen
+
+- einfach zu erlernen und zu benutzen
+- Quellcode von Nutzer leicht wartbar
+- konsistent zu anderen Schnittstellen im System
+- leicht erweiterbar um neue Funktionalität
+- Sicherheit: nur autorisierte oder authentisierte Nutzer
+- Garantien bezüglich Durchsatz, Performance oder Verfügbarkeit geben
+- Kosten für Nutzer regeln
+- Schnittstellen selber testen
+- Anforderungen mit Nutzer klären
+- Implementierungsdetails verbergen
+- atomare Informationseinheiten (zb Strings herunterbrechen)
+- Doku erstellen, vor allem für Fehlerfälle
+
+4.4 Architekturmuster (Patterns)
+
+- Schichten (Layer): kapselt die Details ihrer Implementierung
+- Ports-und-Adapter: Fachdomäne im Kern, außen Infra, Dependency-Inversion
+- Pipes und Filter: 
+  - Folge von unabhängigen Verarbeitungseinheiten, verbunden durch Datenkanäle
+  - jeder Filter gibt seine Ergebnisse über eine Pipe an den nächsten Filter weiter
+  - lose Kopplung, Implementierung austauschbar
+  - zentrale Steuerung notwendig, keine Verwaltung von globalem Zustand, keine zeitliche Entkopplung
+- Batch-Pattern: 
+  - Folge von sequenziellen Transformationen
+  - das System schickt Daten in Stapeln
+  - externe Ablaufsteuerung notwendig, zb Skripte
+- CQRS: schreibende und lesende Aktionen trennen
+- Client-Server, Microservices, Repository (DB), Blackboard (KI), MVC, etc
+- Adapter: soll die Schnittstelle eines existierenden Moduls ändern (zb für Altsystem)
+- Proxy: Stellvertreter mit identischer Schnittstelle (Zugriff kontrollieren)
+- Fassade: öffentliche Schnittstelle zu einer Menge von internen Schnittstellen
+- Beobachter (Observer): bei Zustandsänderungen benachrichtigen
+
+### 5) Kommunizieren & Dokumentieren
+
+### 6) Bewertung
+
+### 7) Technische Querschnittskonzepte
+
+### 8) Verbesserung & Evolution
+
+
+
+
+
+
+
+
+
+
+
+
+
+
