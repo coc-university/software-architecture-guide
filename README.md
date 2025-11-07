@@ -1,4 +1,4 @@
-# domain-driven software-architecture-guide
+# software-architecture-guide
 
 ## Intro
 
@@ -24,6 +24,7 @@
 - Außerdem
   - Ein [Beispiel-Projekt](#Beispiel-Projekt) aus der Praxis macht die Konzepte greifbarer
   - Zusätzlich werden [Tipps für den Projektverlauf](#Projektverlauf-überwachen) gegeben
+  - Das Fachbuch [Effektive Softwarearchitekturen](#buch-effektive-softwarearchitekturen) erklärt wichtige Grundlagen
 
 ## 1) Fachliche Anforderungen sammeln und visualisieren
 
@@ -809,7 +810,7 @@ Persistenz auftrennen
   - kein Ersatz zu arc42, sondern eine Ergänzung 
   - Vorlagen: zb [arc42-Canvas](https://canvas.arc42.org), [software-component-canvas](https://github.com/feststelltaste/software-component-canvas)
 
-## Buch: "Effektive Softwarearchitekturen"
+## Buch: Effektive Softwarearchitekturen
 
 ### 1) Einleitung
 
