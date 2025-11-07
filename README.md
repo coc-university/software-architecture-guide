@@ -857,7 +857,7 @@ Persistenz auftrennen
 - organisatorische Randbedingungen
 - gesetzliche Vorgaben
 
-2.3 Aufgaben von Softwarearchitekten
+2.3) Aufgaben von Softwarearchitekten
 
 - Anforderungen klären
 - Make-or-buy entscheiden
@@ -927,7 +927,7 @@ Persistenz auftrennen
   - "Quality Driven Architecture" (Kapitel 4.2.2)
   - Architekturanalyse und -bewertung (Kapitel 6)
 
-3.6 Externe Nachbarsysteme
+3.6) Externe Nachbarsysteme
 
 - wie sehen die Schnittstellen aus (Stabilität, sync oder async, Änderungsmöglichkeiten, etc)
 - Diagramm + Tabelle zur Erläuterung 
@@ -979,7 +979,7 @@ Persistenz auftrennen
 - kenne die Risiken: eher mit schweren Teilen starten, um Probleme festzustellen
 - Geselligkeit von Fehlern: Fehler treten meist gehäuft auf, wo es schon Fehler gibt
 
-4.2 Entwurfsmethoden
+4.2) Entwurfsmethoden
 
 - Domain-Driven Design 
   - die Sprache der Fachdomäne modellieren (Ubiquitous Language)
@@ -996,13 +996,9 @@ Persistenz auftrennen
 - Top-down und Bottom-up
   - Top-down/Vogelperspektive: Schnittstellen & übergreifende Themen
   - Bottom-up: Detailprobleme lösen, später in Gesamtentwurf einbringen
-- Sichten der Softwarearchitektur
-  - Kontextabgrenzung: System als Blackbox, Nachbarsysteme, Stakeholder, Infra
-  - Bausteinsicht: System als Whitebox, interne statische Strukturen (Top-down)
-  - Laufzeitsicht: Zusammenspiel der Bausteine zur Laufzeit
-  - Verteilungssicht (Infrastruktursicht): Umgebung des Systems (Hardwarekomponenten)
+- Sichten der Softwarearchitektur (siehe 5.4)
 
-4.3 Schnittstellen entwerfen
+4.3) Schnittstellen entwerfen
 
 - einfach zu erlernen und zu benutzen
 - Quellcode von Nutzer leicht wartbar
@@ -1017,7 +1013,7 @@ Persistenz auftrennen
 - atomare Informationseinheiten (zb Strings herunterbrechen)
 - Doku erstellen, vor allem für Fehlerfälle
 
-4.4 Architekturmuster (Patterns)
+4.4) Architekturmuster (Patterns)
 
 - Schichten (Layer): kapselt die Details ihrer Implementierung
 - Ports-und-Adapter: Fachdomäne im Kern, außen Infra, Dependency-Inversion
@@ -1039,22 +1035,59 @@ Persistenz auftrennen
 
 ### 5) Kommunizieren & Dokumentieren
 
+5.1) Warum überhaupt?
+
+- viele verschiedene Stakeholder, Abstimmung notwendig
+- Arc-Doku schafft Gesamtüberblick, dass kann Quellcode nicht leisten
+- Quellcode verschweigt Begründungen-im-Großen und Abhängigkeiten zu Systemen
+
+5.2) Anforderungen an Arc-Doku
+
+- korrekt und aktuell
+- angepasst an Zielgruppe/Stakeholder, deren Fragen beantworten
+- wie? kompakt & top-down
+
+5.3) Effektiv dokumentieren
+
+- aus Sicht der Leser schreiben
+- Annahmen & Rahmenbedingungen festhalten
+- Wiederholungen vermeiden
+- standardisierte Struktur nutzen, zb arc42
+- offene Punkte nicht weglassen, sondern kennzeichnen, zb mit TBD
+- Diagramme mit Erläuterungen/Tabellen kombinieren
+
+5.4) Bestandteile
+
+- Kontextabgrenzung: Vogelperspektive, System als Blackbox, Nachbarsysteme, Stakeholder, Infrastruktur
+- Bausteinsicht: Code-im-Großen, System als Whitebox, interne statische Strukturen (Top-down), Schnittstellen
+- Laufzeitsicht: Zusammenspiel der Bausteine zur Laufzeit, Blackboxes der Bausteinsicht
+- Verteilungssicht (Infrastruktursicht): Umgebung des Systems (Hardwarekomponenten + Mapping zur Software)
+- Querschnittliche Konzepte: Verwendung bestimmter Technologien oder Frameworks (zb Logging, Persistenz)
+- Entscheidungen: via ADRs (Titel, Kontext, Entscheidung, Konsequenzen)
+
+5.5) arc42
+
+- Template für Arc-Doku's mit vorgegebener Struktur
+- Canvas: kompakte Doku auf einer Seite (Steckbrief)
+
+5.6) UML & C4
+
+- UML: Standard-Format für Diagramme
+- C4: Context, Container, Component und Code (zb für Bausteinsicht) 
+
 ### 6) Bewertung
 
-### 7) Technische Querschnittskonzepte
+6.1) Qualitativ (Qualität)
 
-### 8) Verbesserung & Evolution
+- als Basis dienen die Qualitätsanforderungen aus Kapitel 3.5
+- Architecture Tradeoff Analysis Method (ATAM)
+- Anforderungen durch Szenarien verfeinern und Qualitätsbaum erstellen
+- Architektur hinsichtlich der Szenarien analysieren
+- man findet Risiken und Kompromisse heraus
+- Maßnahmen definieren
 
+6.2) Quantitativ (Zahlen)
 
-
-
-
-
-
-
-
-
-
-
-
-
+- Metriken erfassen für Systeme und Quellcode
+- Statische Codeanalyse (zb Abhängigkeiten, Codezeilen, Änderungshäufigkeit, Anzahl der Testfälle)
+- Zur Laufzeit (zb Ressourcenverbrauch, Zeit für die Verarbeitung bestimmter Funktionen)
